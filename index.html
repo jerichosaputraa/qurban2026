@@ -1,0 +1,330 @@
+import React, { useState, useEffect } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Calendar, MapPin, Clock, Info, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
+
+const EVENT_DATE = "Senin, 17 Juni 2024"; // Sesuai Idul Adha 1445 H
+const EVENT_LOCATION = "Masjid Raya Al-Bantani, Serang, Banten";
+
+const RUNDOWN = [
+  { time: '06:30 - 07:30', activity: 'Shalat Idul Adha Berjamaah' },
+  { time: '08:00 - 09:00', activity: 'Penyembelihan Hewan Kurban' },
+  { time: '09:00 - 13:00', activity: 'Pemotongan & Pengemasan Daging' },
+  { time: '13:30 - 16:00', activity: 'Distribusi Daging kepada Warga Terdaftar' },
+  { time: '16:00 - Selesai', activity: 'Pembersihan Area & Penutupan' }
+];
+
+const FAQS = [
+  {
+    question: "Apakah saya harus membawa KTP saat mengambil daging?",
+    answer: "Ya, mohon membawa KTP asli dan bukti pendaftaran (screenshot/cetak) untuk keperluan verifikasi."
+  },
+  {
+    question: "Bolehkah saya mengambilkan jatah untuk orang lain?",
+    answer: "Boleh, asalkan membawa salinan KTP dan bukti pendaftaran milik orang yang diwakilkan."
+  },
+  {
+    question: "Apa yang terjadi jika saya datang terlambat?",
+    answer: "Daging akan dialokasikan ke pendaftar lain jika Anda tidak hadir hingga pukul 16:00 WIB."
+  }
+];
+
+const HeroSection = () => (
+  <section className="bg-emerald-800 text-white py-20 px-4 md:px-8 relative overflow-hidden">
+    <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+    <div className="max-w-4xl mx-auto text-center relative z-10">
+      <h1 className="text-4xl md:text-6xl font-bold mb-4 font-serif">Penyaluran Daging Kurban 1445 H</h1>
+      <p className="text-xl md:text-2xl mb-8 text-emerald-100">Berbagi Berkah, Meraih Taqwa</p>
+      
+      <div className="flex flex-col md:flex-row justify-center items-center gap-6 text-emerald-50 mb-8">
+        <div className="flex items-center gap-2">
+          <Calendar className="w-5 h-5 text-emerald-300" />
+          <span>{EVENT_DATE}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <MapPin className="w-5 h-5 text-emerald-300" />
+          <span>{EVENT_LOCATION}</span>
+        </div>
+      </div>
+      
+      <a href="#register" className="inline-block bg-yellow-500 hover:bg-yellow-400 text-emerald-900 font-bold py-3 px-8 rounded-full transition-colors duration-300 shadow-lg transform hover:-translate-y-1">
+        Daftar Sekarang
+      </a>
+    </div>
+  </section>
+);
+
+const RundownSection = () => (
+  <section id="rundown" className="py-16 px-4 bg-emerald-50">
+    <div className="max-w-3xl mx-auto">
+      <h2 className="text-3xl font-bold text-center text-emerald-900 mb-10 font-serif">Rundown Acara</h2>
+      <div className="space-y-6">
+        {RUNDOWN.map((item, index) => (
+          <div key={index} className="flex flex-col md:flex-row bg-white p-6 rounded-lg shadow-sm border border-emerald-100 items-start md:items-center gap-4 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 text-emerald-700 md:w-1/3 shrink-0 font-semibold">
+              <Clock className="w-5 h-5" />
+              <span>{item.time} WIB</span>
+            </div>
+            <div className="text-gray-700 text-lg">
+              {item.activity}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+const RegistrationForm = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    nik: '',
+    address: '',
+    phone: '',
+    meatChoice: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsSuccess(true);
+      setFormData({ name: '', nik: '', address: '', phone: '', meatChoice: '' });
+    }, 1500);
+  };
+
+  if (isSuccess) {
+    return (
+      <div className="bg-white p-8 rounded-xl shadow-lg text-center border-t-4 border-emerald-500">
+        <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
+        <h3 className="text-2xl font-bold text-gray-800 mb-2">Pendaftaran Berhasil!</h3>
+        <p className="text-gray-600 mb-6">Terima kasih, data Anda telah tersimpan. Silakan simpan halaman ini sebagai bukti.</p>
+        <button 
+          onClick={() => setIsSuccess(false)}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+        >
+          Daftar Orang Lain
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <section id="register" className="py-16 px-4 bg-white relative">
+      <div className="max-w-2xl mx-auto relative z-10">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold text-emerald-900 mb-4 font-serif">Formulir Pendaftaran</h2>
+          <p className="text-gray-600">Isi data di bawah ini untuk menerima kupon pembagian daging.</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+          <div className="space-y-6">
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="name">Nama Lengkap (Sesuai KTP)</label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                required 
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                placeholder="Masukkan nama lengkap"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="nik">NIK</label>
+                <input 
+                  type="text" 
+                  id="nik" 
+                  name="nik" 
+                  required 
+                  pattern="[0-9]{16}"
+                  value={formData.nik}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  placeholder="16 Digit NIK"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="phone">Nomor WhatsApp</label>
+                <input 
+                  type="tel" 
+                  id="phone" 
+                  name="phone" 
+                  required 
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  placeholder="0812xxxxxxxx"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="address">Alamat Lengkap</label>
+              <textarea 
+                id="address" 
+                name="address" 
+                rows="3" 
+                required
+                value={formData.address}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all resize-none"
+                placeholder="Detail alamat Anda"
+              ></textarea>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Pilihan Daging</label>
+              <div className="grid grid-cols-2 gap-4">
+                <label className={`cursor-pointer border rounded-lg p-4 flex flex-col items-center justify-center transition-all ${formData.meatChoice === 'sapi' ? 'border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20' : 'border-gray-200 hover:border-emerald-300 hover:bg-gray-50'}`}>
+                  <input 
+                    type="radio" 
+                    name="meatChoice" 
+                    value="sapi" 
+                    className="sr-only"
+                    required
+                    onChange={handleChange}
+                    checked={formData.meatChoice === 'sapi'}
+                  />
+                  <span className="text-4xl mb-2">🐄</span>
+                  <span className="font-medium text-gray-800">Daging Sapi</span>
+                </label>
+                <label className={`cursor-pointer border rounded-lg p-4 flex flex-col items-center justify-center transition-all ${formData.meatChoice === 'kambing' ? 'border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20' : 'border-gray-200 hover:border-emerald-300 hover:bg-gray-50'}`}>
+                  <input 
+                    type="radio" 
+                    name="meatChoice" 
+                    value="kambing" 
+                    className="sr-only"
+                    onChange={handleChange}
+                    checked={formData.meatChoice === 'kambing'}
+                  />
+                  <span className="text-4xl mb-2">🐐</span>
+                  <span className="font-medium text-gray-800">Daging Kambing</span>
+                </label>
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={isSubmitting}
+              className={`w-full py-4 px-6 rounded-xl text-white font-bold text-lg shadow-md transition-all ${isSubmitting ? 'bg-emerald-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700 hover:shadow-lg transform hover:-translate-y-0.5'}`}
+            >
+              {isSubmitting ? 'Memproses Data...' : 'Kirim Pendaftaran'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+  );
+};
+
+const LocationSection = () => (
+  <section className="py-16 px-4 bg-emerald-800 text-white">
+    <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-10">
+      <div className="md:w-1/2 space-y-6">
+        <h2 className="text-3xl font-bold font-serif">Lokasi Pengambilan</h2>
+        <p className="text-emerald-100 text-lg leading-relaxed">
+          Pengambilan daging kurban akan dilaksanakan di area parkir timur {EVENT_LOCATION}. 
+          Harap ikuti petunjuk arah yang telah disediakan oleh panitia di lokasi.
+        </p>
+        <div className="bg-emerald-900/50 p-6 rounded-lg border border-emerald-700/50">
+          <div className="flex items-start gap-4">
+            <Info className="w-6 h-6 text-yellow-400 shrink-0 mt-1" />
+            <div>
+              <h4 className="font-bold text-yellow-400 mb-1">Penting</h4>
+              <p className="text-sm text-emerald-100">Hanya masuk melalui Gerbang Selatan untuk menghindari kemacetan di jalan utama.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="md:w-1/2 w-full h-80 bg-gray-200 rounded-xl overflow-hidden shadow-xl border-4 border-emerald-700 relative flex items-center justify-center">
+        {/* Placeholder for actual Google Map iframe */}
+        <div className="absolute inset-0 bg-emerald-100 flex flex-col items-center justify-center text-emerald-800">
+           <MapPin className="w-12 h-12 mb-2 text-emerald-600" />
+           <p className="font-semibold text-center px-4">Peta Lokasi akan ditampilkan di sini<br/><span className="text-sm font-normal">(Membutuhkan Google Maps Embed)</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const FAQSection = () => {
+  const [openIndex, setOpenIndex] = useState(null);
+
+  const toggleFAQ = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
+  return (
+    <section className="py-16 px-4 bg-white">
+      <div className="max-w-3xl mx-auto">
+        <h2 className="text-3xl font-bold text-center text-emerald-900 mb-10 font-serif">Pertanyaan yang Sering Diajukan</h2>
+        <div className="space-y-4">
+          {FAQS.map((faq, index) => (
+            <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
+              <button 
+                onClick={() => toggleFAQ(index)}
+                className="w-full px-6 py-4 text-left bg-gray-50 hover:bg-emerald-50 flex justify-between items-center transition-colors focus:outline-none"
+              >
+                <span className="font-medium text-gray-800 pr-4">{faq.question}</span>
+                {openIndex === index ? (
+                  <ChevronUp className="w-5 h-5 text-emerald-600 shrink-0" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-400 shrink-0" />
+                )}
+              </button>
+              <div 
+                className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${openIndex === index ? 'max-h-48 py-4 opacity-100' : 'max-h-0 opacity-0'}`}
+              >
+                <p className="text-gray-600">{faq.answer}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Footer = () => (
+  <footer className="bg-gray-900 text-gray-400 py-10 text-center">
+    <div className="max-w-4xl mx-auto px-4">
+      <p className="mb-4">© 2024 Panitia Kurban Masjid Raya Al-Bantani. Hak Cipta Dilindungi.</p>
+      <div className="flex justify-center gap-4 text-sm">
+        <a href="#" className="hover:text-emerald-400 transition-colors">Bantuan WhatsApp</a>
+        <span>|</span>
+        <a href="#" className="hover:text-emerald-400 transition-colors">Kebijakan Privasi</a>
+      </div>
+    </div>
+  </footer>
+);
+
+export default function App() {
+  return (
+    <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
+      <HeroSection />
+      <RundownSection />
+      
+      {/* Visual separator */}
+      <div className="w-full h-12 bg-gradient-to-b from-emerald-50 to-white"></div>
+      
+      <RegistrationForm />
+      <LocationSection />
+      <FAQSection />
+      <Footer />
+    </div>
+  );
+}

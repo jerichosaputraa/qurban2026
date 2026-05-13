@@ -6,6 +6,8 @@
     <title>Penyaluran Daging Qurban Idul Adha 1447 H</title>
     <!-- MENGGUNAKAN TAILWIND CSS MELALUI CDN UNTUK STYLING INSTAN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- LIBRARY UNTUK DOWNLOAD TIKET MENJADI GAMBAR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* Tambahan styling kecil untuk animasi mulus */
         html { scroll-behavior: smooth; }
@@ -136,14 +138,50 @@
                 </form>
             </div>
 
-            <!-- Area Sukses (Disembunyikan secara default) -->
-            <div id="successSection" class="hidden bg-white p-8 rounded-xl shadow-lg text-center border-t-4 border-emerald-500 max-w-2xl mx-auto">
-                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-500 mx-auto mb-4"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                <h3 class="text-2xl font-bold text-gray-800 mb-2">Pendaftaran Berhasil!</h3>
-                <p class="text-gray-600 mb-6">Terima kasih, data Anda telah tersimpan. Silakan simpan (screenshot) halaman ini sebagai bukti saat pengambilan.</p>
-                <button onclick="resetForm()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors">
-                    Daftar Orang Lain
-                </button>
+            <!-- Area Sukses (Pop Up Tiket) -->
+            <div id="successSection" class="hidden bg-white p-6 md:p-8 rounded-xl shadow-lg text-center border-t-4 border-emerald-500 max-w-2xl mx-auto">
+                <h3 class="text-2xl font-bold text-emerald-900 mb-2">Pendaftaran Berhasil!</h3>
+                <p class="text-gray-600 mb-6">Berikut adalah tiket (kupon) Anda. Silakan download dan simpan gambar ini sebagai bukti pengambilan.</p>
+                
+                <!-- TIKET PREVIEW START -->
+                <div id="ticketBox" class="bg-white border-2 border-dashed border-emerald-600 rounded-xl max-w-sm mx-auto mb-8 overflow-hidden shadow-sm text-left relative">
+                    <!-- Watermark / BG Icon -->
+                    <div class="absolute top-10 right-2 opacity-5 text-9xl z-0" id="ticketWatermark">🐄</div>
+                    
+                    <!-- Header Tiket -->
+                    <div class="bg-emerald-700 text-white p-4 text-center relative z-10">
+                        <h4 class="font-bold text-xl tracking-wider">KUPON QURBAN</h4>
+                        <p class="text-emerald-200 text-xs mt-1">Idul Adha 1447 H / 2026 M</p>
+                    </div>
+                    
+                    <!-- Body Tiket -->
+                    <div class="p-6 relative z-10">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Nama Pendaftar</p>
+                        <p id="ticketName" class="font-bold text-lg text-gray-800 mb-4 truncate">-</p>
+                        
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Pilihan Daging</p>
+                        <div class="flex items-center gap-2 mb-4">
+                            <span id="ticketIcon" class="text-2xl">🥩</span>
+                            <p id="ticketMeat" class="font-bold text-xl text-emerald-700 uppercase">-</p>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-4 mt-2">
+                            <p class="text-xs text-gray-500 mb-1">Lokasi Pengambilan:</p>
+                            <p class="text-sm font-semibold text-gray-700">Musholla Miftakhul Ullum, Cipadu</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- TIKET PREVIEW END -->
+
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="downloadTicket()" id="downloadBtn" class="bg-yellow-500 hover:bg-yellow-400 text-emerald-900 font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                        Download Tiket
+                    </button>
+                    <button onclick="resetForm()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors">
+                        Selesai / Daftar Lain
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -263,6 +301,10 @@
         form.addEventListener('submit', function(e) {
             e.preventDefault(); // Mencegah reload halaman
             
+            // Mengambil nilai input
+            const nameInput = document.getElementById('name').value;
+            const meatInput = document.querySelector('input[name="meatChoice"]:checked').value;
+            
             // Ubah tombol jadi loading
             submitBtn.textContent = 'Memproses Data...';
             submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
@@ -270,6 +312,18 @@
 
             // Simulasi proses loading 1.5 detik
             setTimeout(() => {
+                // Set data ke dalam Tiket
+                document.getElementById('ticketName').textContent = nameInput;
+                if (meatInput === 'sapi') {
+                    document.getElementById('ticketMeat').textContent = 'Daging Sapi';
+                    document.getElementById('ticketIcon').textContent = '🐄';
+                    document.getElementById('ticketWatermark').textContent = '🐄';
+                } else {
+                    document.getElementById('ticketMeat').textContent = 'Daging Kambing';
+                    document.getElementById('ticketIcon').textContent = '🐐';
+                    document.getElementById('ticketWatermark').textContent = '🐐';
+                }
+
                 formSection.classList.add('hidden');
                 successSection.classList.remove('hidden');
                 form.reset(); // Kosongkan form
@@ -281,6 +335,47 @@
                 submitBtn.classList.remove('bg-emerald-400', 'cursor-not-allowed');
             }, 1500);
         });
+
+        // Logika Download Tiket sebagai Gambar
+        function downloadTicket() {
+            const ticketElement = document.getElementById('ticketBox');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const originalBtnText = downloadBtn.innerHTML;
+            
+            // Ubah teks tombol saat memproses
+            downloadBtn.innerHTML = "Memproses...";
+            downloadBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
+            // html2canvas menangkap elemen HTML dan menjadikannya canvas
+            html2canvas(ticketElement, {
+                scale: 2, // Resolusi 2x lebih tajam
+                backgroundColor: "#ffffff"
+            }).then(canvas => {
+                // Konversi canvas menjadi URL gambar (PNG)
+                const imageURI = canvas.toDataURL("image/png");
+                
+                // Membuat link anchor sementara untuk download
+                const link = document.createElement("a");
+                link.href = imageURI;
+                // Nama file berdasarkan nama pendaftar
+                const fileNameName = document.getElementById('ticketName').textContent.replace(/\s+/g, '_');
+                link.download = `Tiket_Qurban_${fileNameName}.png`;
+                
+                // Eksekusi klik download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Kembalikan tombol
+                downloadBtn.innerHTML = originalBtnText;
+                downloadBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+            }).catch(err => {
+                console.error("Gagal mendownload tiket:", err);
+                alert("Terjadi kesalahan saat memproses gambar.");
+                downloadBtn.innerHTML = originalBtnText;
+                downloadBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+            });
+        }
 
         // Logika Reset Form
         function resetForm() {

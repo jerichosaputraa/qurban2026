@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- LIBRARY UNTUK DOWNLOAD TIKET MENJADI GAMBAR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- LIBRARY SUPABASE JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* Tambahan styling kecil untuk animasi mulus */
         html { scroll-behavior: smooth; }
@@ -272,6 +274,12 @@
     </footer>
 
     <script>
+        // === KONFIGURASI SUPABASE ===
+        // Ganti dengan URL dan ANON KEY dari Project Settings -> API di dashboard Supabase Anda
+        const SUPABASE_URL = sb_publishable_DsinVAjh1DRA1MIHhs8QuA_Aa4ZImPE;
+        const SUPABASE_ANON_KEY = sb_secret_G58XFxYneyVDcUitFdad2g_wVToqOon;
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         // Logika untuk UI Pilihan Radio Button
         function updateRadioUI() {
             const sapiChecked = document.querySelector('input[value="sapi"]').checked;
@@ -298,21 +306,40 @@
         const successSection = document.getElementById('successSection');
         const submitBtn = document.getElementById('submitBtn');
 
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault(); // Mencegah reload halaman
             
             // Mengambil nilai input
             const nameInput = document.getElementById('name').value;
+            const nikInput = document.getElementById('nik').value;
+            const phoneInput = document.getElementById('phone').value;
+            const addressInput = document.getElementById('address').value;
             const meatInput = document.querySelector('input[name="meatChoice"]:checked').value;
             
             // Ubah tombol jadi loading
-            submitBtn.textContent = 'Memproses Data...';
+            submitBtn.textContent = 'Menyimpan Data ke Database...';
             submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
             submitBtn.classList.add('bg-emerald-400', 'cursor-not-allowed');
 
-            // Simulasi proses loading 1.5 detik
-            setTimeout(() => {
-                // Set data ke dalam Tiket
+            try {
+                // MENGIRIM DATA KE SUPABASE
+                const { error } = await supabaseClient
+                    .from('registrations')
+                    .insert([
+                        { 
+                            name: nameInput, 
+                            nik: nikInput, 
+                            phone: phoneInput, 
+                            address: addressInput, 
+                            meat_choice: meatInput 
+                        }
+                    ]);
+
+                if (error) {
+                    throw error;
+                }
+
+                // JIKA SUKSES: Set data ke dalam Tiket
                 document.getElementById('ticketName').textContent = nameInput;
                 if (meatInput === 'sapi') {
                     document.getElementById('ticketMeat').textContent = 'Daging Sapi';
@@ -328,12 +355,16 @@
                 successSection.classList.remove('hidden');
                 form.reset(); // Kosongkan form
                 updateRadioUI(); // Reset UI radio button
-                
-                // Kembalikan tombol
+
+            } catch (error) {
+                console.error("Error Supabase:", error);
+                alert("Mohon maaf, terjadi kesalahan saat menyimpan data: " + error.message);
+            } finally {
+                // Kembalikan tombol ke semula (baik sukses maupun error)
                 submitBtn.textContent = 'Kirim Pendaftaran';
                 submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
                 submitBtn.classList.remove('bg-emerald-400', 'cursor-not-allowed');
-            }, 1500);
+            }
         });
 
         // Logika Download Tiket sebagai Gambar

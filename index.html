@@ -121,7 +121,8 @@
                             <label class="block text-sm font-medium text-gray-700 mb-3">Pilihan Daging</label>
                             <div class="grid grid-cols-2 gap-4">
                                 <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all" id="labelSapi">
-                                    <input type="radio" name="meatChoice" value="sapi" class="sr-only" required onchange="updateRadioUI()">
+                                    <!-- HAPUS ATRIBUT 'required' DI SINI -->
+                                    <input type="radio" name="meatChoice" value="sapi" class="sr-only" onchange="updateRadioUI()">
                                     <span class="text-4xl mb-2">🐄</span>
                                     <span class="font-medium text-gray-800">Daging Sapi</span>
                                 </label>
@@ -277,7 +278,7 @@
         // === KONFIGURASI SUPABASE ===
         // Ganti dengan URL dan ANON KEY dari Project Settings -> API di dashboard Supabase Anda
         const SUPABASE_URL = 'sb_publishable_DsinVAjh1DRA1MIHhs8QuA_Aa4ZImPE';
-        const SUPABASE_ANON_KEY = 'sb_secret_G58XFxYneyVDcUitFdad2g_wVToqOon';
+        const SUPABASE_ANON_KEY = 'sb_secret_pKg4gLFj5NLuCNLV3S8JBQ_D3NSL84H';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Logika untuk UI Pilihan Radio Button
@@ -308,13 +309,20 @@
 
         form.addEventListener('submit', async function(e) {
             e.preventDefault(); // Mencegah reload halaman
+
+            // TAMBAHKAN VALIDASI MANUAL DI SINI
+            const meatInputEl = document.querySelector('input[name="meatChoice"]:checked');
+            if (!meatInputEl) {
+                alert("Mohon pilih jenis daging (Sapi atau Kambing) terlebih dahulu.");
+                return; // Hentikan proses jika belum memilih
+            }
             
             // Mengambil nilai input
             const nameInput = document.getElementById('name').value;
             const nikInput = document.getElementById('nik').value;
             const phoneInput = document.getElementById('phone').value;
             const addressInput = document.getElementById('address').value;
-            const meatInput = document.querySelector('input[name="meatChoice"]:checked').value;
+            const meatInput = meatInputEl.value; // Ambil value setelah pasti ada isinya
             
             // Ubah tombol jadi loading
             submitBtn.textContent = 'Menyimpan Data ke Database...';

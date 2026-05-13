@@ -1,364 +1,326 @@
-import React, { useState } from 'react';
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penyaluran Daging Kurban 1445 H</title>
+    <!-- MENGGUNAKAN TAILWIND CSS MELALUI CDN UNTUK STYLING INSTAN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tambahan styling kecil untuk animasi mulus */
+        html { scroll-behavior: smooth; }
+        .transition-max-height { transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out, opacity 0.3s ease-in-out; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
 
-// Konstanta Acara
-const EVENT_DATE = "Senin, 17 Juni 2024"; // Sesuaikan dengan tanggal Idul Adha
-const EVENT_LOCATION = "Masjid Raya Al-Bantani, Serang, Banten";
-
-const RUNDOWN = [
-  { time: '06:30 - 07:30', activity: 'Shalat Idul Adha Berjamaah' },
-  { time: '08:00 - 09:00', activity: 'Penyembelihan Hewan Kurban' },
-  { time: '09:00 - 13:00', activity: 'Pemotongan & Pengemasan Daging' },
-  { time: '13:30 - 16:00', activity: 'Distribusi Daging kepada Warga Terdaftar' },
-  { time: '16:00 - Selesai', activity: 'Pembersihan Area & Penutupan' }
-];
-
-const FAQS = [
-  {
-    question: "Apakah saya harus membawa KTP saat mengambil daging?",
-    answer: "Ya, mohon membawa KTP asli dan bukti pendaftaran (screenshot/cetak) untuk keperluan verifikasi."
-  },
-  {
-    question: "Bolehkah saya mengambilkan jatah untuk orang lain?",
-    answer: "Boleh, asalkan membawa salinan KTP dan bukti pendaftaran milik orang yang diwakilkan."
-  },
-  {
-    question: "Apa yang terjadi jika saya datang terlambat?",
-    answer: "Daging akan dialokasikan ke pendaftar lain jika Anda tidak hadir hingga pukul 16:00 WIB."
-  }
-];
-
-// Menggunakan Inline SVG agar tidak memerlukan library eksternal (anti-error di GitHub)
-const IconCalendar = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-);
-
-const IconMapPin = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-);
-
-const IconClock = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-);
-
-const IconInfo = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-);
-
-const IconCheckCircle = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-);
-
-const IconChevronDown = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m6 9 6 6 6-6"/></svg>
-);
-
-const IconChevronUp = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m18 15-6-6-6 6"/></svg>
-);
-
-const HeroSection = () => (
-  <section className="bg-emerald-800 text-white py-20 px-4 md:px-8 relative overflow-hidden">
-    <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
-    <div className="max-w-4xl mx-auto text-center relative z-10">
-      <h1 className="text-4xl md:text-6xl font-bold mb-4 font-serif">Penyaluran Daging Kurban 1445 H</h1>
-      <p className="text-xl md:text-2xl mb-8 text-emerald-100">Berbagi Berkah, Meraih Taqwa</p>
-      
-      <div className="flex flex-col md:flex-row justify-center items-center gap-6 text-emerald-50 mb-8">
-        <div className="flex items-center gap-2">
-          <IconCalendar className="w-5 h-5 text-emerald-300" />
-          <span>{EVENT_DATE}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <IconMapPin className="w-5 h-5 text-emerald-300" />
-          <span>{EVENT_LOCATION}</span>
-        </div>
-      </div>
-      
-      <a href="#register" className="inline-block bg-yellow-500 hover:bg-yellow-400 text-emerald-900 font-bold py-3 px-8 rounded-full transition-colors duration-300 shadow-lg transform hover:-translate-y-1">
-        Daftar Sekarang
-      </a>
-    </div>
-  </section>
-);
-
-const RundownSection = () => (
-  <section id="rundown" className="py-16 px-4 bg-emerald-50">
-    <div className="max-w-3xl mx-auto">
-      <h2 className="text-3xl font-bold text-center text-emerald-900 mb-10 font-serif">Rundown Acara</h2>
-      <div className="space-y-6">
-        {RUNDOWN.map((item, index) => (
-          <div key={index} className="flex flex-col md:flex-row bg-white p-6 rounded-lg shadow-sm border border-emerald-100 items-start md:items-center gap-4 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-2 text-emerald-700 md:w-1/3 shrink-0 font-semibold">
-              <IconClock className="w-5 h-5" />
-              <span>{item.time} WIB</span>
-            </div>
-            <div className="text-gray-700 text-lg">
-              {item.activity}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-);
-
-const RegistrationForm = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    nik: '',
-    address: '',
-    phone: '',
-    meatChoice: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    // Simulasi pengiriman data (misalnya ke API atau Google Sheets)
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      setFormData({ name: '', nik: '', address: '', phone: '', meatChoice: '' });
-    }, 1500);
-  };
-
-  if (isSuccess) {
-    return (
-      <section className="py-16 px-4 bg-white relative">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-white p-8 rounded-xl shadow-lg text-center border-t-4 border-emerald-500">
-            <IconCheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">Pendaftaran Berhasil!</h3>
-            <p className="text-gray-600 mb-6">Terima kasih, data Anda telah tersimpan. Silakan simpan halaman ini sebagai bukti.</p>
-            <button 
-              onClick={() => setIsSuccess(false)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
-            >
-              Daftar Orang Lain
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <section id="register" className="py-16 px-4 bg-white relative">
-      <div className="max-w-2xl mx-auto relative z-10">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-emerald-900 mb-4 font-serif">Formulir Pendaftaran</h2>
-          <p className="text-gray-600">Isi data di bawah ini untuk menerima kupon pembagian daging.</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <div className="space-y-6">
+    <section class="bg-emerald-800 text-white py-20 px-4 md:px-8 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 font-serif">Penyaluran Daging Kurban 1445 H</h1>
+            <p class="text-xl md:text-2xl mb-8 text-emerald-100">Berbagi Berkah, Meraih Taqwa</p>
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="name">Nama Lengkap (Sesuai KTP)</label>
-              <input 
-                type="text" 
-                id="name" 
-                name="name" 
-                required 
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
-                placeholder="Masukkan nama lengkap"
-              />
+            <div class="flex flex-col md:flex-row justify-center items-center gap-6 text-emerald-50 mb-8">
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-300"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                    <span>Senin, 17 Juni 2024</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-300"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span>Masjid Raya Al-Bantani, Serang</span>
+                </div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="nik">NIK</label>
-                <input 
-                  type="text" 
-                  id="nik" 
-                  name="nik" 
-                  required 
-                  pattern="[0-9]{16}"
-                  title="NIK harus terdiri dari 16 angka"
-                  value={formData.nik}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
-                  placeholder="16 Digit NIK"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="phone">Nomor WhatsApp</label>
-                <input 
-                  type="tel" 
-                  id="phone" 
-                  name="phone" 
-                  required 
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
-                  placeholder="0812xxxxxxxx"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="address">Alamat Lengkap</label>
-              <textarea 
-                id="address" 
-                name="address" 
-                rows="3" 
-                required
-                value={formData.address}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all resize-none"
-                placeholder="Detail alamat Anda"
-              ></textarea>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">Pilihan Daging</label>
-              <div className="grid grid-cols-2 gap-4">
-                <label className={`cursor-pointer border rounded-lg p-4 flex flex-col items-center justify-center transition-all ${formData.meatChoice === 'sapi' ? 'border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20' : 'border-gray-200 hover:border-emerald-300 hover:bg-gray-50'}`}>
-                  <input 
-                    type="radio" 
-                    name="meatChoice" 
-                    value="sapi" 
-                    className="sr-only"
-                    required
-                    onChange={handleChange}
-                    checked={formData.meatChoice === 'sapi'}
-                  />
-                  <span className="text-4xl mb-2">🐄</span>
-                  <span className="font-medium text-gray-800">Daging Sapi</span>
-                </label>
-                <label className={`cursor-pointer border rounded-lg p-4 flex flex-col items-center justify-center transition-all ${formData.meatChoice === 'kambing' ? 'border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20' : 'border-gray-200 hover:border-emerald-300 hover:bg-gray-50'}`}>
-                  <input 
-                    type="radio" 
-                    name="meatChoice" 
-                    value="kambing" 
-                    className="sr-only"
-                    onChange={handleChange}
-                    checked={formData.meatChoice === 'kambing'}
-                  />
-                  <span className="text-4xl mb-2">🐐</span>
-                  <span className="font-medium text-gray-800">Daging Kambing</span>
-                </label>
-              </div>
-            </div>
-
-            <button 
-              type="submit" 
-              disabled={isSubmitting}
-              className={`w-full py-4 px-6 rounded-xl text-white font-bold text-lg shadow-md transition-all ${isSubmitting ? 'bg-emerald-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700 hover:shadow-lg transform hover:-translate-y-0.5'}`}
-            >
-              {isSubmitting ? 'Memproses Data...' : 'Kirim Pendaftaran'}
-            </button>
-          </div>
-        </form>
-      </div>
+            
+            <a href="#register" class="inline-block bg-yellow-500 hover:bg-yellow-400 text-emerald-900 font-bold py-3 px-8 rounded-full transition-colors duration-300 shadow-lg transform hover:-translate-y-1">
+                Daftar Sekarang
+            </a>
+        </div>
     </section>
-  );
-};
 
-const LocationSection = () => (
-  <section className="py-16 px-4 bg-emerald-800 text-white">
-    <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-10">
-      <div className="md:w-1/2 space-y-6">
-        <h2 className="text-3xl font-bold font-serif">Lokasi Pengambilan</h2>
-        <p className="text-emerald-100 text-lg leading-relaxed">
-          Pengambilan daging kurban akan dilaksanakan di area parkir timur {EVENT_LOCATION}. 
-          Harap ikuti petunjuk arah yang telah disediakan oleh panitia di lokasi.
-        </p>
-        <div className="bg-emerald-900/50 p-6 rounded-lg border border-emerald-700/50">
-          <div className="flex items-start gap-4">
-            <IconInfo className="w-6 h-6 text-yellow-400 shrink-0 mt-1" />
-            <div>
-              <h4 className="font-bold text-yellow-400 mb-1">Penting</h4>
-              <p className="text-sm text-emerald-100">Hanya masuk melalui Gerbang Selatan untuk menghindari kemacetan di jalan utama.</p>
+    <section id="rundown" class="py-16 px-4 bg-emerald-50">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold text-center text-emerald-900 mb-10 font-serif">Rundown Acara</h2>
+            <div class="space-y-6">
+                <!-- Item 1 -->
+                <div class="flex flex-col md:flex-row bg-white p-6 rounded-lg shadow-sm border border-emerald-100 items-start md:items-center gap-4 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-2 text-emerald-700 md:w-1/3 shrink-0 font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>06:30 - 07:30 WIB</span>
+                    </div>
+                    <div class="text-gray-700 text-lg">Shalat Idul Adha Berjamaah</div>
+                </div>
+                <!-- Item 2 -->
+                <div class="flex flex-col md:flex-row bg-white p-6 rounded-lg shadow-sm border border-emerald-100 items-start md:items-center gap-4 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-2 text-emerald-700 md:w-1/3 shrink-0 font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>08:00 - 09:00 WIB</span>
+                    </div>
+                    <div class="text-gray-700 text-lg">Penyembelihan Hewan Kurban</div>
+                </div>
+                <!-- Item 3 -->
+                <div class="flex flex-col md:flex-row bg-white p-6 rounded-lg shadow-sm border border-emerald-100 items-start md:items-center gap-4 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-2 text-emerald-700 md:w-1/3 shrink-0 font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>09:00 - 13:00 WIB</span>
+                    </div>
+                    <div class="text-gray-700 text-lg">Pemotongan & Pengemasan Daging</div>
+                </div>
+                <!-- Item 4 -->
+                <div class="flex flex-col md:flex-row bg-white p-6 rounded-lg shadow-sm border border-emerald-100 items-start md:items-center gap-4 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-2 text-emerald-700 md:w-1/3 shrink-0 font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>13:30 - 16:00 WIB</span>
+                    </div>
+                    <div class="text-gray-700 text-lg">Distribusi Daging kepada Warga Terdaftar</div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-      <div className="md:w-1/2 w-full h-80 bg-gray-200 rounded-xl overflow-hidden shadow-xl border-4 border-emerald-700 relative flex items-center justify-center">
-        {/* Placeholder untuk Map (Bisa diganti dengan iframe Google Maps asli) */}
-        <div className="absolute inset-0 bg-emerald-100 flex flex-col items-center justify-center text-emerald-800">
-           <IconMapPin className="w-12 h-12 mb-2 text-emerald-600" />
-           <p className="font-semibold text-center px-4">Area Peta Lokasi</p>
-           <p className="text-sm px-4 text-center mt-2">(Ganti div ini dengan tag iframe dari Google Maps Embed di proyek asli Anda)</p>
-        </div>
-      </div>
-    </div>
-  </section>
-);
-
-const FAQSection = () => {
-  const [openIndex, setOpenIndex] = useState(null);
-
-  const toggleFAQ = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
-  return (
-    <section className="py-16 px-4 bg-white">
-      <div className="max-w-3xl mx-auto">
-        <h2 className="text-3xl font-bold text-center text-emerald-900 mb-10 font-serif">Pertanyaan yang Sering Diajukan</h2>
-        <div className="space-y-4">
-          {FAQS.map((faq, index) => (
-            <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
-              <button 
-                onClick={() => toggleFAQ(index)}
-                className="w-full px-6 py-4 text-left bg-gray-50 hover:bg-emerald-50 flex justify-between items-center transition-colors focus:outline-none"
-              >
-                <span className="font-medium text-gray-800 pr-4">{faq.question}</span>
-                {openIndex === index ? (
-                  <IconChevronUp className="w-5 h-5 text-emerald-600 shrink-0" />
-                ) : (
-                  <IconChevronDown className="w-5 h-5 text-gray-400 shrink-0" />
-                )}
-              </button>
-              <div 
-                className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${openIndex === index ? 'max-h-48 py-4 opacity-100' : 'max-h-0 opacity-0'}`}
-              >
-                <p className="text-gray-600">{faq.answer}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </section>
-  );
-};
 
-const Footer = () => (
-  <footer className="bg-gray-900 text-gray-400 py-10 text-center">
-    <div className="max-w-4xl mx-auto px-4">
-      <p className="mb-4">© 2024 Panitia Kurban {EVENT_LOCATION}. Hak Cipta Dilindungi.</p>
-      <div className="flex justify-center gap-4 text-sm">
-        <a href="#" className="hover:text-emerald-400 transition-colors">Bantuan WhatsApp</a>
-        <span>|</span>
-        <a href="#" className="hover:text-emerald-400 transition-colors">Kebijakan Privasi</a>
-      </div>
-    </div>
-  </footer>
-);
+    <!-- Visual separator -->
+    <div class="w-full h-12 bg-gradient-to-b from-emerald-50 to-white"></div>
 
-export default function App() {
-  return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
-      <HeroSection />
-      <RundownSection />
-      
-      {/* Visual separator */}
-      <div className="w-full h-12 bg-gradient-to-b from-emerald-50 to-white"></div>
-      
-      <RegistrationForm />
-      <LocationSection />
-      <FAQSection />
-      <Footer />
-    </div>
-  );
-}
+    <section id="register" class="py-16 px-4 bg-white relative">
+        <div class="max-w-2xl mx-auto relative z-10">
+            
+            <!-- Area Formulir -->
+            <div id="formSection">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-emerald-900 mb-4 font-serif">Formulir Pendaftaran</h2>
+                    <p class="text-gray-600">Isi data di bawah ini untuk menerima kupon pembagian daging.</p>
+                </div>
+
+                <form id="qurbanForm" class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="name">Nama Lengkap (Sesuai KTP)</label>
+                            <input type="text" id="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all" placeholder="Masukkan nama lengkap">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1" for="nik">NIK</label>
+                                <input type="text" id="nik" required pattern="[0-9]{16}" title="NIK harus terdiri dari 16 angka" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all" placeholder="16 Digit NIK">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1" for="phone">Nomor WhatsApp</label>
+                                <input type="tel" id="phone" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all" placeholder="0812xxxxxxxx">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="address">Alamat Lengkap</label>
+                            <textarea id="address" rows="3" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all resize-none" placeholder="Detail alamat Anda"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Pilihan Daging</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all" id="labelSapi">
+                                    <input type="radio" name="meatChoice" value="sapi" class="sr-only" required onchange="updateRadioUI()">
+                                    <span class="text-4xl mb-2">🐄</span>
+                                    <span class="font-medium text-gray-800">Daging Sapi</span>
+                                </label>
+                                <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all" id="labelKambing">
+                                    <input type="radio" name="meatChoice" value="kambing" class="sr-only" onchange="updateRadioUI()">
+                                    <span class="text-4xl mb-2">🐐</span>
+                                    <span class="font-medium text-gray-800">Daging Kambing</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="w-full py-4 px-6 rounded-xl text-white font-bold text-lg shadow-md transition-all bg-emerald-600 hover:bg-emerald-700 hover:shadow-lg transform hover:-translate-y-0.5">
+                            Kirim Pendaftaran
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Area Sukses (Disembunyikan secara default) -->
+            <div id="successSection" class="hidden bg-white p-8 rounded-xl shadow-lg text-center border-t-4 border-emerald-500 max-w-2xl mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-500 mx-auto mb-4"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Pendaftaran Berhasil!</h3>
+                <p class="text-gray-600 mb-6">Terima kasih, data Anda telah tersimpan. Silakan simpan (screenshot) halaman ini sebagai bukti saat pengambilan.</p>
+                <button onclick="resetForm()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors">
+                    Daftar Orang Lain
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="py-16 px-4 bg-emerald-800 text-white">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-10">
+            <div class="md:w-1/2 space-y-6">
+                <h2 class="text-3xl font-bold font-serif">Lokasi Pengambilan</h2>
+                <p class="text-emerald-100 text-lg leading-relaxed">
+                    Pengambilan daging kurban akan dilaksanakan di area parkir timur Masjid Raya Al-Bantani. 
+                    Harap ikuti petunjuk arah yang telah disediakan oleh panitia di lokasi.
+                </p>
+                <div class="bg-emerald-900/50 p-6 rounded-lg border border-emerald-700/50">
+                    <div class="flex items-start gap-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400 shrink-0 mt-1"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                        <div>
+                            <h4 class="font-bold text-yellow-400 mb-1">Penting</h4>
+                            <p class="text-sm text-emerald-100">Hanya masuk melalui Gerbang Selatan untuk menghindari kemacetan di jalan utama.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="md:w-1/2 w-full h-80 bg-gray-200 rounded-xl overflow-hidden shadow-xl border-4 border-emerald-700 relative flex items-center justify-center">
+                <!-- Anda bisa mengganti div di bawah ini dengan Iframe Google Maps -->
+                <div class="absolute inset-0 bg-emerald-100 flex flex-col items-center justify-center text-emerald-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600 mb-2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <p class="font-semibold text-center px-4">Area Peta Lokasi</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 px-4 bg-white">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold text-center text-emerald-900 mb-10 font-serif">Pertanyaan yang Sering Diajukan</h2>
+            <div class="space-y-4">
+                
+                <!-- FAQ 1 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button onclick="toggleFAQ(this)" class="w-full px-6 py-4 text-left bg-gray-50 hover:bg-emerald-50 flex justify-between items-center transition-colors focus:outline-none">
+                        <span class="font-medium text-gray-800 pr-4">Apakah saya harus membawa KTP saat mengambil daging?</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0 icon-down"><path d="m6 9 6 6 6-6"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600 shrink-0 icon-up hidden"><path d="m18 15-6-6-6 6"/></svg>
+                    </button>
+                    <div class="faq-content px-6 transition-max-height max-h-0 opacity-0 overflow-hidden">
+                        <p class="text-gray-600 pb-4">Ya, mohon membawa KTP asli dan bukti pendaftaran (screenshot/cetak) untuk keperluan verifikasi oleh panitia.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button onclick="toggleFAQ(this)" class="w-full px-6 py-4 text-left bg-gray-50 hover:bg-emerald-50 flex justify-between items-center transition-colors focus:outline-none">
+                        <span class="font-medium text-gray-800 pr-4">Bolehkah saya mengambilkan jatah untuk orang lain?</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0 icon-down"><path d="m6 9 6 6 6-6"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600 shrink-0 icon-up hidden"><path d="m18 15-6-6-6 6"/></svg>
+                    </button>
+                    <div class="faq-content px-6 transition-max-height max-h-0 opacity-0 overflow-hidden">
+                        <p class="text-gray-600 pb-4">Boleh, asalkan membawa salinan KTP dan bukti pendaftaran (screenshot) milik orang yang diwakilkan tersebut.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button onclick="toggleFAQ(this)" class="w-full px-6 py-4 text-left bg-gray-50 hover:bg-emerald-50 flex justify-between items-center transition-colors focus:outline-none">
+                        <span class="font-medium text-gray-800 pr-4">Apa yang terjadi jika saya datang terlambat?</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0 icon-down"><path d="m6 9 6 6 6-6"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600 shrink-0 icon-up hidden"><path d="m18 15-6-6-6 6"/></svg>
+                    </button>
+                    <div class="faq-content px-6 transition-max-height max-h-0 opacity-0 overflow-hidden">
+                        <p class="text-gray-600 pb-4">Daging akan dialokasikan ke pendaftar cadangan atau warga sekitar jika Anda tidak hadir hingga pukul 16:00 WIB.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-900 text-gray-400 py-10 text-center">
+        <div class="max-w-4xl mx-auto px-4">
+            <p class="mb-4">© 2024 Panitia Kurban Masjid Raya Al-Bantani. Hak Cipta Dilindungi.</p>
+            <div class="flex justify-center gap-4 text-sm">
+                <a href="#" class="hover:text-emerald-400 transition-colors">Bantuan WhatsApp</a>
+                <span>|</span>
+                <a href="#" class="hover:text-emerald-400 transition-colors">Kebijakan Privasi</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Logika untuk UI Pilihan Radio Button
+        function updateRadioUI() {
+            const sapiChecked = document.querySelector('input[value="sapi"]').checked;
+            const kambingChecked = document.querySelector('input[value="kambing"]').checked;
+            
+            const labelSapi = document.getElementById('labelSapi');
+            const labelKambing = document.getElementById('labelKambing');
+
+            // Reset kelas
+            labelSapi.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all";
+            labelKambing.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all";
+
+            // Tambah kelas aktif
+            if (sapiChecked) {
+                labelSapi.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-lg p-4 flex flex-col items-center justify-center transition-all";
+            } else if (kambingChecked) {
+                labelKambing.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-lg p-4 flex flex-col items-center justify-center transition-all";
+            }
+        }
+
+        // Logika Form Submission
+        const form = document.getElementById('qurbanForm');
+        const formSection = document.getElementById('formSection');
+        const successSection = document.getElementById('successSection');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Mencegah reload halaman
+            
+            // Ubah tombol jadi loading
+            submitBtn.textContent = 'Memproses Data...';
+            submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+            submitBtn.classList.add('bg-emerald-400', 'cursor-not-allowed');
+
+            // Simulasi proses loading 1.5 detik
+            setTimeout(() => {
+                formSection.classList.add('hidden');
+                successSection.classList.remove('hidden');
+                form.reset(); // Kosongkan form
+                updateRadioUI(); // Reset UI radio button
+                
+                // Kembalikan tombol
+                submitBtn.textContent = 'Kirim Pendaftaran';
+                submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                submitBtn.classList.remove('bg-emerald-400', 'cursor-not-allowed');
+            }, 1500);
+        });
+
+        // Logika Reset Form
+        function resetForm() {
+            successSection.classList.add('hidden');
+            formSection.classList.remove('hidden');
+        }
+
+        // Logika FAQ Accordion
+        function toggleFAQ(button) {
+            const content = button.nextElementSibling;
+            const iconDown = button.querySelector('.icon-down');
+            const iconUp = button.querySelector('.icon-up');
+
+            // Menutup semua FAQ lainnya (opsional, jika ingin hanya 1 yang terbuka)
+            document.querySelectorAll('.faq-content').forEach(el => {
+                if(el !== content) {
+                    el.classList.replace('max-h-48', 'max-h-0');
+                    el.classList.replace('opacity-100', 'opacity-0');
+                    el.classList.remove('py-4');
+                    el.previousElementSibling.querySelector('.icon-down').classList.remove('hidden');
+                    el.previousElementSibling.querySelector('.icon-up').classList.add('hidden');
+                }
+            });
+
+            if (content.classList.contains('max-h-0')) {
+                // Buka
+                content.classList.replace('max-h-0', 'max-h-48');
+                content.classList.replace('opacity-0', 'opacity-100');
+                content.classList.add('py-4'); // tambah padding
+                iconDown.classList.add('hidden');
+                iconUp.classList.remove('hidden');
+            } else {
+                // Tutup
+                content.classList.replace('max-h-48', 'max-h-0');
+                content.classList.replace('opacity-100', 'opacity-0');
+                content.classList.remove('py-4'); // hapus padding
+                iconDown.classList.remove('hidden');
+                iconUp.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

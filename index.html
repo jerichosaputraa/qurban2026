@@ -450,14 +450,15 @@
             submitBtn.classList.add('bg-emerald-400', 'cursor-not-allowed');
 
             try {
-                // 1. MENGAMBIL JUMLAH TOTAL PENDAFTAR SAAT INI (SEBELUM INSERT)
+                // 1. MENGAMBIL JUMLAH TOTAL PENDAFTAR SAAT INI (SEBELUM INSERT) BERDASARKAN JENIS DAGING
                 const { count, error: countError } = await supabaseClient
                     .from('registrations')
-                    .select('*', { count: 'exact', head: true });
+                    .select('*', { count: 'exact', head: true })
+                    .eq('meat_choice', meatInput); // <-- FILTER DITAMBAHKAN DI SINI
                 
                 if (countError) throw countError;
 
-                // Tentukan nomor awal tiket berdasarkan jumlah data di database + 1
+                // Tentukan nomor awal tiket berdasarkan jumlah data di database (yang sesuai pilihan daging) + 1
                 let nextUrutan = (count || 0) + 1;
 
                 // 2. MENYUSUN ARRAY DATA & NOMOR TIKET UNTUK DIMASUKKAN

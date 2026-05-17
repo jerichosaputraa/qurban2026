@@ -14,6 +14,11 @@
         /* Tambahan styling kecil untuk animasi mulus */
         html { scroll-behavior: smooth; }
         .transition-max-height { transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out, opacity 0.3s ease-in-out; }
+        /* Kustom scrollbar untuk area tiket */
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #10b981; border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #059669; }
     </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800">
@@ -109,7 +114,6 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-3">Pilihan Daging</label>
                             <div class="grid grid-cols-2 gap-4">
-                                <!-- Ditambahkan id input radio dan span teks sisa kuota -->
                                 <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative" id="labelSapi">
                                     <input type="radio" name="meatChoice" value="sapi" id="radioSapi" class="sr-only" onchange="updateRadioUI()">
                                     <span class="text-4xl mb-2">🐄</span>
@@ -126,6 +130,25 @@
                             </div>
                         </div>
 
+                        <!-- Area Opsi Pengkurban -->
+                        <div class="mt-4 p-5 bg-emerald-50 rounded-lg border border-emerald-200">
+                            <label class="flex items-start gap-3 cursor-pointer">
+                                <input type="checkbox" id="isPengkurban" class="mt-1 w-5 h-5 text-emerald-600 rounded border-emerald-300 focus:ring-emerald-500 transition-all" onchange="togglePengkurban()">
+                                <div>
+                                    <span class="font-bold text-emerald-900 block">Saya adalah Pengkurban (Shohibul Qurban)</span>
+                                    <span class="text-xs text-emerald-700 block mt-0.5 leading-relaxed">Centang opsi ini jika Anda ingin mencetak banyak kupon sekaligus untuk disedekahkan/dibagikan ke kerabat.</span>
+                                </div>
+                            </label>
+                            
+                            <div id="ticketCountContainer" class="mt-4 hidden transition-all duration-300 ease-in-out">
+                                <div class="border-t border-emerald-200 pt-4">
+                                    <label class="block text-sm font-bold text-gray-700 mb-2" for="ticketCount">Jumlah Tiket yang Ingin Dicetak</label>
+                                    <input type="number" id="ticketCount" min="1" max="50" value="1" class="w-full px-4 py-2 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-semibold text-lg" placeholder="Contoh: 4">
+                                    <p class="text-[11px] font-medium text-emerald-600 mt-1.5">*Maksimal 50 tiket dalam satu kali proses.</p>
+                                </div>
+                            </div>
+                        </div>
+
                         <button type="submit" id="submitBtn" class="w-full py-4 px-6 rounded-xl text-white font-bold text-lg shadow-md transition-all bg-emerald-600 hover:bg-emerald-700 hover:shadow-lg transform hover:-translate-y-0.5">
                             Kirim Pendaftaran
                         </button>
@@ -134,56 +157,24 @@
             </div>
 
             <!-- Area Sukses (Pop Up Tiket) -->
-            <div id="successSection" class="hidden bg-white p-6 md:p-8 rounded-xl shadow-lg text-center border-t-4 border-emerald-500 max-w-2xl mx-auto">
+            <div id="successSection" class="hidden bg-white p-6 md:p-8 rounded-xl shadow-lg text-center border-t-4 border-emerald-500 max-w-3xl mx-auto">
                 <h3 class="text-2xl font-bold text-emerald-900 mb-2">Pendaftaran Berhasil!</h3>
-                <p class="text-gray-600 mb-6">Berikut adalah tiket (kupon) Anda. Silakan bagikan atau simpan gambar ini sebagai bukti pengambilan.</p>
+                <p id="successDesc" class="text-gray-600 mb-6">Berikut adalah tiket (kupon) Anda. Silakan bagikan atau simpan gambar ini sebagai bukti pengambilan.</p>
                 
-                <!-- TIKET PREVIEW START -->
-                <div id="ticketBox" class="bg-white border-2 border-dashed border-emerald-600 rounded-xl max-w-sm mx-auto mb-8 overflow-hidden shadow-sm text-left relative">
-                    <!-- Watermark / BG Icon -->
-                    <div class="absolute top-10 right-2 opacity-5 text-9xl z-0" id="ticketWatermark">🐄</div>
-                    
-                    <!-- Header Tiket -->
-                    <div class="bg-emerald-700 text-white p-4 flex justify-between items-center relative z-10">
-                        <div class="text-left">
-                            <h4 class="font-bold text-lg md:text-xl tracking-wider">KUPON QURBAN</h4>
-                            <p class="text-emerald-200 text-xs mt-1">Idul Adha 1447 H / 2026 M</p>
-                        </div>
-                        <div class="text-right border-l border-emerald-600 pl-3 md:pl-4">
-                            <p class="text-[10px] text-emerald-200 uppercase tracking-wider mb-0.5">Kode Kupon</p>
-                            <p id="ticketCode" class="font-mono font-bold text-lg md:text-xl tracking-widest text-yellow-300">-</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Body Tiket -->
-                    <div class="p-6 relative z-10">
-                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Nama Pendaftar</p>
-                        <!-- PERBAIKAN: Menghapus truncate dan menambahkan pb-1 break-words -->
-                        <p id="ticketName" class="font-bold text-lg text-gray-800 mb-4 pb-1 break-words leading-relaxed">-</p>
-                        
-                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Pilihan Daging</p>
-                        <div class="flex items-center gap-2 mb-4">
-                            <span id="ticketIcon" class="text-2xl">🥩</span>
-                            <p id="ticketMeat" class="font-bold text-xl text-emerald-700 uppercase">-</p>
-                        </div>
-
-                        <div class="border-t border-gray-200 pt-4 mt-2">
-                            <p class="text-xs text-gray-500 mb-1">Lokasi Pengambilan:</p>
-                            <p class="text-sm font-semibold text-gray-700">Musholla Miftahul Ullum, Cipadu</p>
-                        </div>
-                    </div>
+                <!-- TIKET PREVIEW CONTAINER SCROLLABLE -->
+                <div id="ticketsContainer" class="custom-scrollbar max-h-[60vh] overflow-y-auto px-2 pb-4 mb-6 space-y-6">
+                    <!-- Tiket-tiket akan dimunculkan di sini menggunakan Javascript -->
                 </div>
-                <!-- TIKET PREVIEW END -->
 
                 <!-- Tombol Aksi Tiket -->
-                <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3">
+                <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 border-t border-gray-100 pt-6 mt-4">
                     <button onclick="shareTicket()" id="shareBtn" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-5 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                        Bagikan
+                        Bagikan Tiket
                     </button>
                     <button onclick="downloadTicket()" id="downloadBtn" class="bg-yellow-500 hover:bg-yellow-400 text-emerald-900 font-bold py-3 px-5 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                        Simpan
+                        Simpan Tiket
                     </button>
                     <button onclick="resetForm()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-5 rounded-lg transition-colors">
                         Selesai
@@ -292,6 +283,10 @@
         // BATAS MAKSIMAL KUOTA
         const LIMIT_SAPI = 200;
         const LIMIT_KAMBING = 100;
+        
+        // VARIABEL GLOBAL SISA KUOTA (Disimpan untuk validasi saat submit)
+        let globalSisaSapi = 0;
+        let globalSisaKambing = 0;
 
         // FUNGSI CEK KUOTA DARI DATABASE
         async function checkQuotas() {
@@ -308,8 +303,8 @@
                     .select('*', { count: 'exact', head: true })
                     .eq('meat_choice', 'kambing');
 
-                const sisaSapi = LIMIT_SAPI - (countSapi || 0);
-                const sisaKambing = LIMIT_KAMBING - (countKambing || 0);
+                globalSisaSapi = LIMIT_SAPI - (countSapi || 0);
+                globalSisaKambing = LIMIT_KAMBING - (countKambing || 0);
 
                 const radioSapi = document.getElementById('radioSapi');
                 const radioKambing = document.getElementById('radioKambing');
@@ -319,7 +314,7 @@
                 const sisaKambingText = document.getElementById('sisaKambingText');
 
                 // Update UI Sapi
-                if (sisaSapi <= 0) {
+                if (globalSisaSapi <= 0) {
                     radioSapi.disabled = true;
                     radioSapi.checked = false; // Batalkan pilihan jika terlanjur dipilih
                     labelSapi.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-100');
@@ -329,12 +324,12 @@
                     sisaSapiText.classList.replace('text-emerald-600', 'text-red-500');
                     sisaSapiText.classList.add('font-bold');
                 } else {
-                    sisaSapiText.textContent = `Sisa kuota: ${sisaSapi}`;
+                    sisaSapiText.textContent = `Sisa kuota: ${globalSisaSapi}`;
                     sisaSapiText.classList.replace('text-gray-500', 'text-emerald-600');
                 }
 
                 // Update UI Kambing
-                if (sisaKambing <= 0) {
+                if (globalSisaKambing <= 0) {
                     radioKambing.disabled = true;
                     radioKambing.checked = false;
                     labelKambing.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-100');
@@ -344,13 +339,13 @@
                     sisaKambingText.classList.replace('text-emerald-600', 'text-red-500');
                     sisaKambingText.classList.add('font-bold');
                 } else {
-                    sisaKambingText.textContent = `Sisa kuota: ${sisaKambing}`;
+                    sisaKambingText.textContent = `Sisa kuota: ${globalSisaKambing}`;
                     sisaKambingText.classList.replace('text-gray-500', 'text-emerald-600');
                 }
 
                 // Jika kedua kuota habis, matikan tombol pendaftaran
                 const submitBtn = document.getElementById('submitBtn');
-                if (sisaSapi <= 0 && sisaKambing <= 0) {
+                if (globalSisaSapi <= 0 && globalSisaKambing <= 0) {
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Mohon Maaf, Kuota Penuh';
                     submitBtn.classList.replace('bg-emerald-600', 'bg-gray-400');
@@ -366,6 +361,18 @@
 
         // Panggil fungsi cek kuota pertama kali halaman dimuat
         window.addEventListener('DOMContentLoaded', checkQuotas);
+
+        // Logika untuk menampilkan/menyembunyikan kolom Pengkurban
+        function togglePengkurban() {
+            const isChecked = document.getElementById('isPengkurban').checked;
+            const container = document.getElementById('ticketCountContainer');
+            if (isChecked) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+                document.getElementById('ticketCount').value = 1; // reset ke 1 jika dibatalkan
+            }
+        }
 
         // Logika untuk UI Pilihan Radio Button
         function updateRadioUI() {
@@ -406,7 +413,7 @@
             const meatInputEl = document.querySelector('input[name="meatChoice"]:checked');
             if (!meatInputEl) {
                 alert("Mohon pilih jenis daging (Sapi atau Kambing) terlebih dahulu.");
-                return; // Hentikan proses jika belum memilih
+                return;
             }
             
             // Mengambil nilai input
@@ -414,22 +421,46 @@
             const phoneInput = document.getElementById('phone').value;
             const meatInput = meatInputEl.value;
             
+            // Mengecek status pengkurban & jumlah tiket yang diinginkan
+            const isPengkurban = document.getElementById('isPengkurban').checked;
+            let ticketCount = isPengkurban ? parseInt(document.getElementById('ticketCount').value) || 1 : 1;
+            
+            // Validasi batas wajar jumlah tiket
+            if (ticketCount < 1) ticketCount = 1;
+            if (ticketCount > 50) {
+                alert("Maksimal pencetakan tiket dalam 1x proses adalah 50 tiket.");
+                ticketCount = 50;
+                document.getElementById('ticketCount').value = 50;
+            }
+
+            // VALIDASI: Cek apakah tiket yang diminta melebihi Sisa Kuota
+            if (meatInput === 'sapi' && ticketCount > globalSisaSapi) {
+                alert(`Mohon maaf, sisa kuota Daging Sapi hanya ${globalSisaSapi} tiket. Harap kurangi jumlah tiket Anda.`);
+                return;
+            }
+            if (meatInput === 'kambing' && ticketCount > globalSisaKambing) {
+                alert(`Mohon maaf, sisa kuota Daging Kambing hanya ${globalSisaKambing} tiket. Harap kurangi jumlah tiket Anda.`);
+                return;
+            }
+            
             // Ubah tombol jadi loading
             submitBtn.textContent = 'Menyimpan Data ke Database...';
             submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
             submitBtn.classList.add('bg-emerald-400', 'cursor-not-allowed');
 
             try {
-                // MENGIRIM DATA KE SUPABASE
-                const { error } = await supabaseClient
-                    .from('registrations')
-                    .insert([
-                        { 
-                            name: nameInput, 
-                            phone: phoneInput, 
-                            meat_choice: meatInput 
-                        }
-                    ]);
+                // Menyusun ARRAY data untuk dimasukkan sekaligus (batch insert)
+                const dataToInsert = [];
+                for (let i = 0; i < ticketCount; i++) {
+                    dataToInsert.push({ 
+                        name: nameInput, 
+                        phone: phoneInput, 
+                        meat_choice: meatInput 
+                    });
+                }
+
+                // MENGIRIM DATA BANYAK SEKALIGUS KE SUPABASE
+                const { error } = await supabaseClient.from('registrations').insert(dataToInsert);
 
                 if (error) {
                     throw error;
@@ -440,32 +471,71 @@
                     .from('registrations')
                     .select('*', { count: 'exact', head: true });
                 
-                let urutan = 1; // Nomor default jika ini pendaftar pertama
-                if (!countError && count !== null) {
-                    urutan = count; // Nomor urut = total data yang baru saja masuk
+                // Menentukan range nomor urut (contoh: total 20 data, kita barusan masukin 4, berarti nomor kita: 17, 18, 19, 20)
+                let urutanAkhir = count || ticketCount;
+                let urutanMulai = urutanAkhir - ticketCount + 1;
+                if (urutanMulai < 1) urutanMulai = 1;
+
+                // UPDATE UI TEXT SUKSES
+                document.getElementById('successDesc').textContent = ticketCount > 1 
+                    ? `Berikut adalah ${ticketCount} tiket (kupon) Anda. Silakan bagikan atau simpan gambar-gambar di bawah ini.` 
+                    : `Berikut adalah tiket (kupon) Anda. Silakan bagikan atau simpan gambar ini.`;
+
+                // BUILD HTML BANYAK TIKET
+                const ticketsContainer = document.getElementById('ticketsContainer');
+                ticketsContainer.innerHTML = ''; // bersihkan kontainer
+                
+                const meatLabel = meatInput === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
+                const meatIcon = meatInput === 'sapi' ? '🐄' : '🐐';
+
+                for(let i=0; i < ticketCount; i++) {
+                    let urutanTiket = urutanMulai + i;
+                    let ticketCode = String(urutanTiket).padStart(3, '0');
+
+                    const ticketHTML = `
+                        <div class="ticket-box bg-white border-2 border-dashed border-emerald-600 rounded-xl max-w-sm mx-auto overflow-hidden shadow-sm text-left relative shrink-0">
+                            <!-- Watermark / BG Icon -->
+                            <div class="absolute top-10 right-2 opacity-5 text-9xl z-0">${meatIcon}</div>
+                            
+                            <!-- Header Tiket -->
+                            <div class="bg-emerald-700 text-white p-4 flex justify-between items-center relative z-10">
+                                <div class="text-left">
+                                    <h4 class="font-bold text-lg md:text-xl tracking-wider">KUPON QURBAN</h4>
+                                    <p class="text-emerald-200 text-xs mt-1">Idul Adha 1447 H / 2026 M</p>
+                                </div>
+                                <div class="text-right border-l border-emerald-600 pl-3 md:pl-4">
+                                    <p class="text-[10px] text-emerald-200 uppercase tracking-wider mb-0.5">Kode Kupon</p>
+                                    <p class="font-mono font-bold text-lg md:text-xl tracking-widest text-yellow-300 ticket-code-text">${ticketCode}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Body Tiket -->
+                            <div class="p-6 relative z-10">
+                                <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Nama Pendaftar</p>
+                                <p class="font-bold text-lg text-gray-800 mb-4 pb-1 break-words leading-relaxed user-name-text">${nameInput}</p>
+                                
+                                <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Pilihan Daging</p>
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="text-2xl">${meatIcon}</span>
+                                    <p class="font-bold text-xl text-emerald-700 uppercase">${meatLabel}</p>
+                                </div>
+
+                                <div class="border-t border-gray-200 pt-4 mt-2">
+                                    <p class="text-xs text-gray-500 mb-1">Lokasi Pengambilan:</p>
+                                    <p class="text-sm font-semibold text-gray-700">Musholla Miftahul Ullum, Cipadu</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    ticketsContainer.insertAdjacentHTML('beforeend', ticketHTML);
                 }
 
-                // Format angka menjadi 3 digit (contoh: 1 -> 001, 15 -> 015)
-                const ticketCode = String(urutan).padStart(3, '0');
-
-                // JIKA SUKSES: Set data ke dalam Tiket
-                document.getElementById('ticketCode').textContent = ticketCode;
-                document.getElementById('ticketName').textContent = nameInput;
-                if (meatInput === 'sapi') {
-                    document.getElementById('ticketMeat').textContent = 'Daging Sapi';
-                    document.getElementById('ticketIcon').textContent = '🐄';
-                    document.getElementById('ticketWatermark').textContent = '🐄';
-                } else {
-                    document.getElementById('ticketMeat').textContent = 'Daging Kambing';
-                    document.getElementById('ticketIcon').textContent = '🐐';
-                    document.getElementById('ticketWatermark').textContent = '🐐';
-                }
-
-                // Menampilkan Kupon
+                // Menampilkan Section Kupon
                 formSection.classList.add('hidden');
                 successSection.classList.remove('hidden');
                 form.reset(); // Kosongkan form
                 updateRadioUI(); // Reset UI radio button
+                document.getElementById('ticketCountContainer').classList.add('hidden'); // Sembunyikan count container lagi
                 
                 // Perbarui sisa kuota untuk pendaftar selanjutnya yang membuka
                 checkQuotas();
@@ -481,9 +551,9 @@
             }
         });
 
-        // Logika Berbagi (Share) Tiket
+        // Logika Berbagi (Share) Tiket (Mendukung Banyak Tiket Sekaligus)
         async function shareTicket() {
-            const ticketElement = document.getElementById('ticketBox');
+            const ticketElements = document.querySelectorAll('.ticket-box');
             const shareBtn = document.getElementById('shareBtn');
             const originalBtnText = shareBtn.innerHTML;
             
@@ -492,38 +562,45 @@
             shareBtn.classList.add('opacity-70', 'cursor-not-allowed');
 
             try {
-                // Menangkap elemen menjadi canvas
-                const canvas = await html2canvas(ticketElement, { scale: 2, backgroundColor: "#ffffff" });
+                const filesArray = [];
                 
-                // Ubah canvas menjadi file blob
-                canvas.toBlob(async (blob) => {
-                    const fileNameName = document.getElementById('ticketName').textContent.replace(/\s+/g, '_');
-                    const fileName = `Tiket_Qurban_${fileNameName}.png`;
-                    const file = new File([blob], fileName, { type: 'image/png' });
-
-                    // Cek dukungan Web Share API untuk File
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({
-                                title: 'Kupon Qurban 1447 H',
-                                text: 'Ini adalah e-Kupon Qurban saya. Mohon disimpan untuk pengambilan daging.',
-                                files: [file]
-                            });
-                        } catch (err) {
-                            if (err.name !== 'AbortError') {
-                                console.error("Gagal share tiket:", err);
-                                alert("Terjadi kesalahan saat mencoba membagikan tiket.");
-                            }
-                        }
-                    } else {
-                        // Fallback jika browser desktop tidak mendukung share file gambar
-                        alert("Browser perangkat Anda tidak mendukung fitur berbagi gambar langsung. Silakan gunakan tombol 'Simpan' untuk mendownload tiket.");
-                    }
+                // Looping untuk merender dan mengubah semua tiket menjadi file gambar
+                for (let i = 0; i < ticketElements.length; i++) {
+                    const canvas = await html2canvas(ticketElements[i], { scale: 2, backgroundColor: "#ffffff" });
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                     
-                    // Kembalikan tombol
-                    shareBtn.innerHTML = originalBtnText;
-                    shareBtn.classList.remove('opacity-70', 'cursor-not-allowed');
-                }, 'image/png');
+                    const codeEl = ticketElements[i].querySelector('.ticket-code-text');
+                    const nameEl = ticketElements[i].querySelector('.user-name-text');
+                    
+                    const ticketCode = codeEl ? codeEl.textContent : (i+1);
+                    const userName = nameEl ? nameEl.textContent.replace(/\s+/g, '_') : 'Anonim';
+                    const fileName = `Tiket_${userName}_${ticketCode}.png`;
+                    
+                    filesArray.push(new File([blob], fileName, { type: 'image/png' }));
+                }
+
+                // Cek dukungan Web Share API untuk File
+                if (navigator.canShare && navigator.canShare({ files: filesArray })) {
+                    try {
+                        await navigator.share({
+                            title: 'Kupon Qurban 1447 H',
+                            text: `Berikut adalah ${filesArray.length} e-Kupon Qurban untuk pengambilan daging.`,
+                            files: filesArray
+                        });
+                    } catch (err) {
+                        if (err.name !== 'AbortError') {
+                            console.error("Gagal share tiket:", err);
+                            alert("Terjadi kesalahan saat mencoba membagikan tiket.");
+                        }
+                    }
+                } else {
+                    // Fallback jika browser desktop tidak mendukung share banyak gambar
+                    alert("Browser perangkat Anda tidak mendukung fitur berbagi gambar massal secara langsung. Silakan gunakan tombol 'Simpan Tiket' untuk mendownloadnya.");
+                }
+                
+                // Kembalikan tombol
+                shareBtn.innerHTML = originalBtnText;
+                shareBtn.classList.remove('opacity-70', 'cursor-not-allowed');
                 
             } catch (err) {
                 console.error("Gagal memproses tiket:", err);
@@ -533,51 +610,55 @@
             }
         }
 
-        // Logika Download Tiket sebagai Gambar
-        function downloadTicket() {
-            const ticketElement = document.getElementById('ticketBox');
+        // Logika Download Tiket Beruntun
+        async function downloadTicket() {
+            const ticketElements = document.querySelectorAll('.ticket-box');
             const downloadBtn = document.getElementById('downloadBtn');
             const originalBtnText = downloadBtn.innerHTML;
             
             // Ubah teks tombol saat memproses
-            downloadBtn.innerHTML = "Memproses...";
+            downloadBtn.innerHTML = "Mendownload...";
             downloadBtn.classList.add('opacity-70', 'cursor-not-allowed');
 
-            // html2canvas menangkap elemen HTML dan menjadikannya canvas
-            html2canvas(ticketElement, {
-                scale: 2, // Resolusi 2x lebih tajam
-                backgroundColor: "#ffffff"
-            }).then(canvas => {
-                // Konversi canvas menjadi URL gambar (PNG)
-                const imageURI = canvas.toDataURL("image/png");
-                
-                // Membuat link anchor sementara untuk download
-                const link = document.createElement("a");
-                link.href = imageURI;
-                // Nama file berdasarkan nama pendaftar
-                const fileNameName = document.getElementById('ticketName').textContent.replace(/\s+/g, '_');
-                link.download = `Tiket_Qurban_${fileNameName}.png`;
-                
-                // Eksekusi klik download
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
+            try {
+                for (let i = 0; i < ticketElements.length; i++) {
+                    // html2canvas menangkap elemen HTML dan menjadikannya canvas
+                    const canvas = await html2canvas(ticketElements[i], { scale: 2, backgroundColor: "#ffffff" });
+                    const imageURI = canvas.toDataURL("image/png");
+                    
+                    const codeEl = ticketElements[i].querySelector('.ticket-code-text');
+                    const nameEl = ticketElements[i].querySelector('.user-name-text');
+                    
+                    const ticketCode = codeEl ? codeEl.textContent : (i+1);
+                    const userName = nameEl ? nameEl.textContent.replace(/\s+/g, '_') : 'Anonim';
+
+                    const link = document.createElement("a");
+                    link.href = imageURI;
+                    link.download = `Tiket_${userName}_${ticketCode}.png`;
+                    
+                    // Eksekusi klik download
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Beri jeda kecil antar download agar browser tidak memblokirnya (anti-spam popup)
+                    await new Promise(r => setTimeout(r, 400));
+                }
+            } catch (err) {
+                console.error("Gagal mendownload tiket:", err);
+                alert("Terjadi kesalahan saat memproses gambar tiket.");
+            } finally {
                 // Kembalikan tombol
                 downloadBtn.innerHTML = originalBtnText;
                 downloadBtn.classList.remove('opacity-70', 'cursor-not-allowed');
-            }).catch(err => {
-                console.error("Gagal mendownload tiket:", err);
-                alert("Terjadi kesalahan saat memproses gambar.");
-                downloadBtn.innerHTML = originalBtnText;
-                downloadBtn.classList.remove('opacity-70', 'cursor-not-allowed');
-            });
+            }
         }
 
         // Logika Reset Form
         function resetForm() {
             successSection.classList.add('hidden');
             formSection.classList.remove('hidden');
+            document.getElementById('ticketsContainer').innerHTML = ''; // bersihkan memori
         }
 
         // Logika FAQ Accordion

@@ -132,7 +132,7 @@
             <!-- Area Sukses (Pop Up Tiket) -->
             <div id="successSection" class="hidden bg-white p-6 md:p-8 rounded-xl shadow-lg text-center border-t-4 border-emerald-500 max-w-2xl mx-auto">
                 <h3 class="text-2xl font-bold text-emerald-900 mb-2">Pendaftaran Berhasil!</h3>
-                <p class="text-gray-600 mb-6">Berikut adalah tiket (kupon) Anda. Silakan download dan simpan gambar ini sebagai bukti pengambilan.</p>
+                <p class="text-gray-600 mb-6">Berikut adalah tiket (kupon) Anda. Silakan bagikan atau simpan gambar ini sebagai bukti pengambilan.</p>
                 
                 <!-- TIKET PREVIEW START -->
                 <div id="ticketBox" class="bg-white border-2 border-dashed border-emerald-600 rounded-xl max-w-sm mx-auto mb-8 overflow-hidden shadow-sm text-left relative">
@@ -171,13 +171,18 @@
                 </div>
                 <!-- TIKET PREVIEW END -->
 
-                <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <button onclick="downloadTicket()" id="downloadBtn" class="bg-yellow-500 hover:bg-yellow-400 text-emerald-900 font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                        Download Tiket
+                <!-- Tombol Aksi Tiket -->
+                <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3">
+                    <button onclick="shareTicket()" id="shareBtn" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-5 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        Bagikan
                     </button>
-                    <button onclick="resetForm()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors">
-                        Selesai / Daftar Lain
+                    <button onclick="downloadTicket()" id="downloadBtn" class="bg-yellow-500 hover:bg-yellow-400 text-emerald-900 font-bold py-3 px-5 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                        Simpan
+                    </button>
+                    <button onclick="resetForm()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-5 rounded-lg transition-colors">
+                        Selesai
                     </button>
                 </div>
             </div>
@@ -384,6 +389,58 @@
                 submitBtn.classList.remove('bg-emerald-400', 'cursor-not-allowed');
             }
         });
+
+        // Logika Berbagi (Share) Tiket
+        async function shareTicket() {
+            const ticketElement = document.getElementById('ticketBox');
+            const shareBtn = document.getElementById('shareBtn');
+            const originalBtnText = shareBtn.innerHTML;
+            
+            // Ubah teks tombol saat memproses
+            shareBtn.innerHTML = "Memproses...";
+            shareBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
+            try {
+                // Menangkap elemen menjadi canvas
+                const canvas = await html2canvas(ticketElement, { scale: 2, backgroundColor: "#ffffff" });
+                
+                // Ubah canvas menjadi file blob
+                canvas.toBlob(async (blob) => {
+                    const fileNameName = document.getElementById('ticketName').textContent.replace(/\s+/g, '_');
+                    const fileName = `Tiket_Qurban_${fileNameName}.png`;
+                    const file = new File([blob], fileName, { type: 'image/png' });
+
+                    // Cek dukungan Web Share API untuk File
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                title: 'Kupon Qurban 1447 H',
+                                text: 'Ini adalah e-Kupon Qurban saya. Mohon disimpan untuk pengambilan daging.',
+                                files: [file]
+                            });
+                        } catch (err) {
+                            if (err.name !== 'AbortError') {
+                                console.error("Gagal share tiket:", err);
+                                alert("Terjadi kesalahan saat mencoba membagikan tiket.");
+                            }
+                        }
+                    } else {
+                        // Fallback jika browser desktop tidak mendukung share file gambar
+                        alert("Browser perangkat Anda tidak mendukung fitur berbagi gambar langsung. Silakan gunakan tombol 'Simpan' untuk mendownload tiket.");
+                    }
+                    
+                    // Kembalikan tombol
+                    shareBtn.innerHTML = originalBtnText;
+                    shareBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                }, 'image/png');
+                
+            } catch (err) {
+                console.error("Gagal memproses tiket:", err);
+                alert("Terjadi kesalahan saat membuat gambar tiket.");
+                shareBtn.innerHTML = originalBtnText;
+                shareBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+            }
+        }
 
         // Logika Download Tiket sebagai Gambar
         function downloadTicket() {

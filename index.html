@@ -114,6 +114,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-3">Pilihan Daging</label>
                             <div class="grid grid-cols-2 gap-4">
+                                <!-- Ditambahkan id input radio dan span teks sisa kuota -->
                                 <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative" id="labelSapi">
                                     <input type="radio" name="meatChoice" value="sapi" id="radioSapi" class="sr-only" onchange="updateRadioUI()">
                                     <span class="text-4xl mb-2">🐄</span>
@@ -449,34 +450,41 @@
             submitBtn.classList.add('bg-emerald-400', 'cursor-not-allowed');
 
             try {
-                // Menyusun ARRAY data untuk dimasukkan sekaligus (batch insert)
-                const dataToInsert = [];
-                for (let i = 0; i < ticketCount; i++) {
-                    dataToInsert.push({ 
-                        name: nameInput, 
-                        phone: phoneInput, 
-                        meat_choice: meatInput 
-                    });
-                }
-
-                // MENGIRIM DATA BANYAK SEKALIGUS KE SUPABASE
-                const { error } = await supabaseClient.from('registrations').insert(dataToInsert);
-
-                if (error) {
-                    throw error;
-                }
-
-                // MENGAMBIL JUMLAH TOTAL PENDAFTAR UNTUK NOMOR URUT
+                // 1. MENGAMBIL JUMLAH TOTAL PENDAFTAR SAAT INI (SEBELUM INSERT)
                 const { count, error: countError } = await supabaseClient
                     .from('registrations')
                     .select('*', { count: 'exact', head: true });
                 
-                // Menentukan range nomor urut (contoh: total 20 data, kita barusan masukin 4, berarti nomor kita: 17, 18, 19, 20)
-                let urutanAkhir = count || ticketCount;
-                let urutanMulai = urutanAkhir - ticketCount + 1;
-                if (urutanMulai < 1) urutanMulai = 1;
+                if (countError) throw countError;
 
-                // UPDATE UI TEXT SUKSES
+                // Tentukan nomor awal tiket berdasarkan jumlah data di database + 1
+                let nextUrutan = (count || 0) + 1;
+
+                // 2. MENYUSUN ARRAY DATA & NOMOR TIKET UNTUK DIMASUKKAN
+                const dataToInsert = [];
+                const generatedTickets = []; // Simpan data untuk UI
+
+                for (let i = 0; i < ticketCount; i++) {
+                    let currentUrutan = nextUrutan + i;
+                    let ticketCode = String(currentUrutan).padStart(3, '0');
+                    
+                    dataToInsert.push({ 
+                        name: nameInput, 
+                        phone: phoneInput, 
+                        meat_choice: meatInput,
+                        ticket_number: ticketCode // <-- MENGIRIM NOMOR URUT KE SUPABASE
+                    });
+                    
+                    generatedTickets.push(ticketCode);
+                }
+
+                // 3. MENGIRIM DATA BANYAK SEKALIGUS KE SUPABASE
+                const { error: insertError } = await supabaseClient.from('registrations').insert(dataToInsert);
+
+                if (insertError) throw insertError;
+
+
+                // 4. UPDATE UI TEXT SUKSES
                 document.getElementById('successDesc').textContent = ticketCount > 1 
                     ? `Berikut adalah ${ticketCount} tiket (kupon) Anda. Silakan bagikan atau simpan gambar-gambar di bawah ini.` 
                     : `Berikut adalah tiket (kupon) Anda. Silakan bagikan atau simpan gambar ini.`;
@@ -488,9 +496,9 @@
                 const meatLabel = meatInput === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
                 const meatIcon = meatInput === 'sapi' ? '🐄' : '🐐';
 
-                for(let i=0; i < ticketCount; i++) {
-                    let urutanTiket = urutanMulai + i;
-                    let ticketCode = String(urutanTiket).padStart(3, '0');
+                // Render tiket satu persatu berdasarkan array yang sudah dibuat tadi
+                for(let i=0; i < generatedTickets.length; i++) {
+                    const ticketCode = generatedTickets[i];
 
                     const ticketHTML = `
                         <div class="ticket-box bg-white border-2 border-dashed border-emerald-600 rounded-xl max-w-sm mx-auto overflow-hidden shadow-sm text-left relative shrink-0">

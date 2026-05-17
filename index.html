@@ -109,15 +109,19 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-3">Pilihan Daging</label>
                             <div class="grid grid-cols-2 gap-4">
-                                <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all" id="labelSapi">
-                                    <input type="radio" name="meatChoice" value="sapi" class="sr-only" onchange="updateRadioUI()">
+                                <!-- Ditambahkan id input radio dan span teks sisa kuota -->
+                                <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative" id="labelSapi">
+                                    <input type="radio" name="meatChoice" value="sapi" id="radioSapi" class="sr-only" onchange="updateRadioUI()">
                                     <span class="text-4xl mb-2">🐄</span>
                                     <span class="font-medium text-gray-800">Daging Sapi</span>
+                                    <span id="sisaSapiText" class="text-xs font-medium text-gray-500 mt-1">Mengecek kuota...</span>
                                 </label>
-                                <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all" id="labelKambing">
-                                    <input type="radio" name="meatChoice" value="kambing" class="sr-only" onchange="updateRadioUI()">
+                                
+                                <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative" id="labelKambing">
+                                    <input type="radio" name="meatChoice" value="kambing" id="radioKambing" class="sr-only" onchange="updateRadioUI()">
                                     <span class="text-4xl mb-2">🐐</span>
                                     <span class="font-medium text-gray-800">Daging Kambing</span>
+                                    <span id="sisaKambingText" class="text-xs font-medium text-gray-500 mt-1">Mengecek kuota...</span>
                                 </label>
                             </div>
                         </div>
@@ -285,23 +289,107 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5amp2YmhvaWFqbmlqZnJjYnR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2Nzg1NzYsImV4cCI6MjA5NDI1NDU3Nn0.0T8f0rPPdBwbFW0sxwjp6NgJrWgyjfCTcYOKnWPaHQA';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // BATAS MAKSIMAL KUOTA
+        const LIMIT_SAPI = 200;
+        const LIMIT_KAMBING = 100;
+
+        // FUNGSI CEK KUOTA DARI DATABASE
+        async function checkQuotas() {
+            try {
+                // Ambil jumlah pendaftar sapi
+                const { count: countSapi } = await supabaseClient
+                    .from('registrations')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('meat_choice', 'sapi');
+                
+                // Ambil jumlah pendaftar kambing
+                const { count: countKambing } = await supabaseClient
+                    .from('registrations')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('meat_choice', 'kambing');
+
+                const sisaSapi = LIMIT_SAPI - (countSapi || 0);
+                const sisaKambing = LIMIT_KAMBING - (countKambing || 0);
+
+                const radioSapi = document.getElementById('radioSapi');
+                const radioKambing = document.getElementById('radioKambing');
+                const labelSapi = document.getElementById('labelSapi');
+                const labelKambing = document.getElementById('labelKambing');
+                const sisaSapiText = document.getElementById('sisaSapiText');
+                const sisaKambingText = document.getElementById('sisaKambingText');
+
+                // Update UI Sapi
+                if (sisaSapi <= 0) {
+                    radioSapi.disabled = true;
+                    radioSapi.checked = false; // Batalkan pilihan jika terlanjur dipilih
+                    labelSapi.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-100');
+                    labelSapi.classList.remove('cursor-pointer', 'hover:border-emerald-300', 'hover:bg-gray-50');
+                    sisaSapiText.textContent = 'KUOTA HABIS';
+                    sisaSapiText.classList.replace('text-gray-500', 'text-red-500');
+                    sisaSapiText.classList.replace('text-emerald-600', 'text-red-500');
+                    sisaSapiText.classList.add('font-bold');
+                } else {
+                    sisaSapiText.textContent = `Sisa kuota: ${sisaSapi}`;
+                    sisaSapiText.classList.replace('text-gray-500', 'text-emerald-600');
+                }
+
+                // Update UI Kambing
+                if (sisaKambing <= 0) {
+                    radioKambing.disabled = true;
+                    radioKambing.checked = false;
+                    labelKambing.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-100');
+                    labelKambing.classList.remove('cursor-pointer', 'hover:border-emerald-300', 'hover:bg-gray-50');
+                    sisaKambingText.textContent = 'KUOTA HABIS';
+                    sisaKambingText.classList.replace('text-gray-500', 'text-red-500');
+                    sisaKambingText.classList.replace('text-emerald-600', 'text-red-500');
+                    sisaKambingText.classList.add('font-bold');
+                } else {
+                    sisaKambingText.textContent = `Sisa kuota: ${sisaKambing}`;
+                    sisaKambingText.classList.replace('text-gray-500', 'text-emerald-600');
+                }
+
+                // Jika kedua kuota habis, matikan tombol pendaftaran
+                const submitBtn = document.getElementById('submitBtn');
+                if (sisaSapi <= 0 && sisaKambing <= 0) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Mohon Maaf, Kuota Penuh';
+                    submitBtn.classList.replace('bg-emerald-600', 'bg-gray-400');
+                    submitBtn.classList.replace('hover:bg-emerald-700', 'cursor-not-allowed');
+                }
+
+                updateRadioUI(); // Refresh UI warna kotak yang terpilih
+
+            } catch (err) {
+                console.error("Gagal mengecek kuota:", err);
+            }
+        }
+
+        // Panggil fungsi cek kuota pertama kali halaman dimuat
+        window.addEventListener('DOMContentLoaded', checkQuotas);
+
         // Logika untuk UI Pilihan Radio Button
         function updateRadioUI() {
             const sapiChecked = document.querySelector('input[value="sapi"]').checked;
             const kambingChecked = document.querySelector('input[value="kambing"]').checked;
             
+            const radioSapi = document.getElementById('radioSapi');
+            const radioKambing = document.getElementById('radioKambing');
             const labelSapi = document.getElementById('labelSapi');
             const labelKambing = document.getElementById('labelKambing');
 
-            // Reset kelas
-            labelSapi.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all";
-            labelKambing.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all";
+            // Reset kelas hanya jika tidak disabled (bukan kuota habis)
+            if (!radioSapi.disabled) {
+                labelSapi.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative";
+            }
+            if (!radioKambing.disabled) {
+                labelKambing.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative";
+            }
 
             // Tambah kelas aktif
-            if (sapiChecked) {
-                labelSapi.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-lg p-4 flex flex-col items-center justify-center transition-all";
-            } else if (kambingChecked) {
-                labelKambing.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-lg p-4 flex flex-col items-center justify-center transition-all";
+            if (sapiChecked && !radioSapi.disabled) {
+                labelSapi.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative";
+            } else if (kambingChecked && !radioKambing.disabled) {
+                labelKambing.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative";
             }
         }
 
@@ -321,7 +409,7 @@
                 return; // Hentikan proses jika belum memilih
             }
             
-            // Mengambil nilai input (NIK dan Alamat dihapus)
+            // Mengambil nilai input
             const nameInput = document.getElementById('name').value;
             const phoneInput = document.getElementById('phone').value;
             const meatInput = meatInputEl.value;
@@ -378,6 +466,9 @@
                 successSection.classList.remove('hidden');
                 form.reset(); // Kosongkan form
                 updateRadioUI(); // Reset UI radio button
+                
+                // Perbarui sisa kuota untuk pendaftar selanjutnya yang membuka
+                checkQuotas();
 
             } catch (error) {
                 console.error("Error Supabase:", error);
@@ -415,7 +506,7 @@
                         try {
                             await navigator.share({
                                 title: 'Kupon Qurban 1447 H',
-                                text: 'Terimakasih sudah mendaftar. Mohon disimpan e-kupon berikut untuk pengambilan daging.',
+                                text: 'Ini adalah e-Kupon Qurban saya. Mohon disimpan untuk pengambilan daging.',
                                 files: [file]
                             });
                         } catch (err) {

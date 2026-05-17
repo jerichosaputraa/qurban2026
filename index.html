@@ -140,9 +140,15 @@
                     <div class="absolute top-10 right-2 opacity-5 text-9xl z-0" id="ticketWatermark">🐄</div>
                     
                     <!-- Header Tiket -->
-                    <div class="bg-emerald-700 text-white p-4 text-center relative z-10">
-                        <h4 class="font-bold text-xl tracking-wider">KUPON QURBAN</h4>
-                        <p class="text-emerald-200 text-xs mt-1">Idul Adha 1447 H / 2026 M</p>
+                    <div class="bg-emerald-700 text-white p-4 flex justify-between items-center relative z-10">
+                        <div class="text-left">
+                            <h4 class="font-bold text-lg md:text-xl tracking-wider">KUPON QURBAN</h4>
+                            <p class="text-emerald-200 text-xs mt-1">Idul Adha 1447 H / 2026 M</p>
+                        </div>
+                        <div class="text-right border-l border-emerald-600 pl-3 md:pl-4">
+                            <p class="text-[10px] text-emerald-200 uppercase tracking-wider mb-0.5">Kode Kupon</p>
+                            <p id="ticketCode" class="font-mono font-bold text-lg md:text-xl tracking-widest text-yellow-300">-</p>
+                        </div>
                     </div>
                     
                     <!-- Body Tiket -->
@@ -336,7 +342,21 @@
                     throw error;
                 }
 
+                // MENGAMBIL JUMLAH TOTAL PENDAFTAR UNTUK NOMOR URUT
+                const { count, error: countError } = await supabaseClient
+                    .from('registrations')
+                    .select('*', { count: 'exact', head: true });
+                
+                let urutan = 1; // Nomor default jika ini pendaftar pertama
+                if (!countError && count !== null) {
+                    urutan = count; // Nomor urut = total data yang baru saja masuk
+                }
+
+                // Format angka menjadi 3 digit (contoh: 1 -> 001, 15 -> 015)
+                const ticketCode = String(urutan).padStart(3, '0');
+
                 // JIKA SUKSES: Set data ke dalam Tiket
+                document.getElementById('ticketCode').textContent = ticketCode;
                 document.getElementById('ticketName').textContent = nameInput;
                 if (meatInput === 'sapi') {
                     document.getElementById('ticketMeat').textContent = 'Daging Sapi';

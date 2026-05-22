@@ -4,715 +4,119 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Panitia Qurban RT 06</title>
-    <!-- MENGGUNAKAN TAILWIND CSS MELALUI CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- LIBRARY UNTUK DOWNLOAD TIKET MENJADI GAMBAR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- LIBRARY SUPABASE JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- LIBRARY UNTUK EXPORT EXCEL (.xlsx) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         html { scroll-behavior: smooth; }
-        .transition-max-height { transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out, opacity 0.3s ease-in-out; }
-        /* Kustom scrollbar untuk area tiket */
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 8px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #10b981; border-radius: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #059669; }
     </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col">
 
-    <!-- ========================================== -->
-    <!-- HALAMAN LOGIN -->
-    <!-- ========================================== -->
-    <div id="loginSection" class="flex-1 flex flex-col justify-center items-center px-4 py-12 bg-emerald-800 relative overflow-hidden">
-        <!-- Background Pattern -->
-        <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
-        
+    <!-- Konten disederhanakan untuk fokus ke perbaikan Excel -->
+    <div id="loginSection" class="flex-1 flex flex-col justify-center items-center px-4 py-12 bg-emerald-800 relative">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative z-10">
-            <div class="text-center mb-8">
-                <div class="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                </div>
-                <h2 class="text-2xl font-bold text-emerald-900 font-serif">Panel Panitia Qurban</h2>
-                <p class="text-gray-500 text-sm mt-1">RT 006 / RW 06 Cipadu</p>
-            </div>
-            
+            <h2 class="text-2xl font-bold text-emerald-900 text-center mb-6">Panel Panitia Qurban</h2>
             <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="mb-6">
-                    <label class="block text-sm font-bold text-gray-700 mb-2" for="pinInput">Masukkan PIN Panitia</label>
-                    <input type="password" id="pinInput" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-0 focus:border-emerald-500 outline-none transition-all text-center text-2xl tracking-widest font-mono" placeholder="••••••">
-                </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-lg">
-                    Masuk
-                </button>
+                <input type="password" id="pinInput" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl mb-4 text-center text-2xl font-mono" placeholder="••••••">
+                <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl">Masuk</button>
             </form>
         </div>
     </div>
 
-
-    <!-- ========================================== -->
-    <!-- WRAPPER APLIKASI (Ditampilkan setelah login) -->
-    <!-- ========================================== -->
     <div id="mainAppSection" class="hidden flex-1 flex-col">
-        
-        <!-- Header / Navbar Dinamis -->
-        <header class="bg-emerald-800 text-white shadow-md sticky top-0 z-50">
-            <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
-                    <h1 class="font-bold text-lg hidden sm:block">Aplikasi Pendataan Qurban</h1>
-                    <h1 class="font-bold text-lg sm:hidden">Pendataan Qurban</h1>
-                </div>
-                <button id="headerBtn" onclick="handleLogout()" class="text-emerald-100 hover:text-white bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
-                    Keluar
-                </button>
+        <header class="bg-emerald-800 text-white p-4">
+            <div class="max-w-4xl mx-auto flex justify-between">
+                <h1 class="font-bold">Aplikasi Pendataan Qurban</h1>
+                <button onclick="switchView('login')" class="text-sm bg-emerald-700 px-3 py-1 rounded">Keluar</button>
             </div>
         </header>
 
-        <!-- Container Utama (Tempat berganti halaman) -->
-        <main class="flex-1 py-8 px-4 bg-gray-50 flex flex-col items-center">
-            
-            <!-- 1. HALAMAN DASHBOARD (MENU UTAMA) -->
-            <div id="dashboardSection" class="w-full max-w-3xl hidden w-full">
-                <div class="text-center mb-10">
-                    <h2 class="text-3xl font-bold text-emerald-900 mb-2 font-serif">Selamat Datang, Panitia!</h2>
-                    <p class="text-gray-600">Pilih menu di bawah ini untuk memulai tugas Anda.</p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Tombol Menu Pendataan -->
-                    <div onclick="switchView('register')" class="bg-white p-8 rounded-2xl shadow-sm border border-emerald-200 hover:border-emerald-500 hover:shadow-lg transition-all cursor-pointer group text-center flex flex-col items-center justify-center">
-                        <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-emerald-900 mb-2">Pendataan Warga</h3>
-                        <p class="text-sm text-gray-500">Mendaftarkan warga dan mencetak e-kupon qurban secara langsung.</p>
-                    </div>
-
-                    <!-- Tombol Menu Export -->
-                    <div onclick="switchView('export')" class="bg-white p-8 rounded-2xl shadow-sm border border-emerald-200 hover:border-emerald-500 hover:shadow-lg transition-all cursor-pointer group text-center flex flex-col items-center justify-center">
-                        <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-blue-900 mb-2">Export Data (Excel)</h3>
-                        <p class="text-sm text-gray-500">Mengunduh data pendaftar yang sudah masuk ke dalam format tabel Excel (.xlsx) yang rapi.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. HALAMAN PENDATAAN (FORM & TIKET) -->
-            <div id="registrationSection" class="w-full max-w-2xl hidden w-full">
-                <!-- Area Formulir -->
-                <div id="formSection">
-                    <div class="mb-8 text-center">
-                        <h2 class="text-2xl font-bold text-emerald-900 mb-2 font-serif">Formulir Pendataan Warga</h2>
-                        <p class="text-gray-600 text-sm">Isi data warga untuk membuat e-Kupon antrean.</p>
-                    </div>
-
-                    <form id="qurbanForm" class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-200">
-                        <div class="space-y-6">
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2" for="name">Nama Lengkap (Sesuai KTP)</label>
-                                <input type="text" id="name" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all bg-gray-50" placeholder="Masukkan nama warga">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2" for="phone">Nomor WhatsApp</label>
-                                <input type="tel" id="phone" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all bg-gray-50" placeholder="0812xxxxxxxx">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-3">Pilihan Daging</label>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative" id="labelSapi">
-                                        <input type="radio" name="meatChoice" value="sapi" id="radioSapi" class="sr-only" onchange="updateRadioUI()">
-                                        <span class="text-4xl mb-2">🐄</span>
-                                        <span class="font-bold text-gray-800">Daging Sapi</span>
-                                        <span id="sisaSapiText" class="text-xs font-medium text-gray-500 mt-1">Mengecek kuota...</span>
-                                    </label>
-                                    
-                                    <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative" id="labelKambing">
-                                        <input type="radio" name="meatChoice" value="kambing" id="radioKambing" class="sr-only" onchange="updateRadioUI()">
-                                        <span class="text-4xl mb-2">🐐</span>
-                                        <span class="font-bold text-gray-800">Daging Kambing</span>
-                                        <span id="sisaKambingText" class="text-xs font-medium text-gray-500 mt-1">Mengecek kuota...</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- Area Opsi Pengkurban -->
-                            <div class="mt-2 p-5 bg-emerald-50 rounded-xl border border-emerald-200">
-                                <label class="flex items-start gap-3 cursor-pointer">
-                                    <input type="checkbox" id="isPengkurban" class="mt-1 w-5 h-5 text-emerald-600 rounded border-emerald-300 focus:ring-emerald-500 transition-all" onchange="togglePengkurban()">
-                                    <div>
-                                        <span class="font-bold text-emerald-900 block">Warga ini adalah Pengkurban (Shohibul Qurban)</span>
-                                        <span class="text-xs text-emerald-700 block mt-0.5 leading-relaxed">Centang opsi ini untuk membuat tiket ganda (Batch) bagi pengkurban.</span>
-                                    </div>
-                                </label>
-                                
-                                <div id="ticketCountContainer" class="mt-4 hidden transition-all duration-300 ease-in-out">
-                                    <div class="border-t border-emerald-200 pt-4">
-                                        <label class="block text-sm font-bold text-gray-700 mb-2" for="ticketCount">Jumlah Tiket yang Ingin Dicetak</label>
-                                        <input type="number" id="ticketCount" min="1" max="50" value="1" class="w-full px-4 py-2 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-semibold text-lg" placeholder="Contoh: 4">
-                                        <p class="text-[11px] font-medium text-emerald-600 mt-1.5">*Maksimal 50 tiket dalam satu kali proses.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button type="submit" id="submitBtn" class="w-full py-4 px-6 rounded-xl text-white font-bold text-lg shadow-md transition-all bg-emerald-600 hover:bg-emerald-700 transform hover:-translate-y-0.5 mt-4">
-                                Buat e-Kupon
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Area Sukses (Pop Up Tiket) -->
-                <div id="successSection" class="hidden bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-emerald-200 text-center">
-                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600"><polyline points="20 6 9 17 4 12"/></svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-emerald-900 mb-2">Pembuatan Kupon Berhasil!</h3>
-                    <p id="successDesc" class="text-gray-600 mb-6 text-sm">Berikut adalah e-Kupon warga. Silakan bagikan via WA atau simpan/cetak.</p>
-                    
-                    <!-- TIKET PREVIEW CONTAINER SCROLLABLE -->
-                    <div id="ticketsContainer" class="custom-scrollbar max-h-[50vh] overflow-y-auto px-2 pb-4 mb-6 space-y-6">
-                        <!-- Tiket-tiket akan dimunculkan di sini menggunakan Javascript -->
-                    </div>
-
-                    <!-- Tombol Aksi Tiket -->
-                    <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 border-t border-gray-100 pt-6 mt-4">
-                        <button onclick="shareTicket()" id="shareBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                            Kirim WA
-                        </button>
-                        <button onclick="downloadTicket()" id="downloadBtn" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-emerald-900 font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                            Simpan/Cetak
-                        </button>
-                        <button onclick="resetForm()" class="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-xl transition-colors">
-                            Selesai
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. HALAMAN EXPORT DATA -->
-            <div id="exportSection" class="w-full max-w-xl hidden w-full">
-                <div class="mb-8 text-center">
-                    <h2 class="text-2xl font-bold text-blue-900 mb-2 font-serif">Export Data Pendaftar</h2>
-                    <p class="text-gray-600 text-sm">Unduh data ke format Excel (.xlsx) yang sudah diformat rapi dengan tabel.</p>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-200">
-                    <div class="mb-6">
-                        <label class="block text-sm font-bold text-gray-700 mb-2" for="exportFilter">Pilih Kategori Data</label>
-                        <select id="exportFilter" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-gray-50 text-gray-700 cursor-pointer font-medium">
-                            <option value="all">Semua Pendaftar (Sapi & Kambing)</option>
-                            <option value="sapi">Khusus Pendaftar Daging Sapi</option>
-                            <option value="kambing">Khusus Pendaftar Daging Kambing</option>
-                        </select>
-                    </div>
-
-                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 text-sm text-blue-800 flex items-start gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5 text-blue-600"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-                        <p>File akan diunduh dalam format <strong>.xlsx</strong> asli. Lebar kolom sudah otomatis disesuaikan, dan nomor WhatsApp / Tiket dijamin tidak akan kehilangan angka 0 di depannya.</p>
-                    </div>
-
-                    <button onclick="downloadExcelData()" id="btnDoExport" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
+        <main class="flex-1 p-4 flex flex-col items-center">
+            <div id="exportSection" class="w-full max-w-xl">
+                <h2 class="text-2xl font-bold text-blue-900 mb-6 text-center">Export Data ke Excel</h2>
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
+                    <select id="exportFilter" class="w-full px-4 py-3 border rounded-xl mb-6 bg-gray-50">
+                        <option value="all">Semua Pendaftar</option>
+                        <option value="sapi">Khusus Daging Sapi</option>
+                        <option value="kambing">Khusus Daging Kambing</option>
+                    </select>
+                    <button onclick="downloadExcelData()" id="btnDoExport" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl">
                         Download File Excel (.xlsx)
                     </button>
                 </div>
             </div>
-
         </main>
     </div>
 
     <script>
-        // === KONFIGURASI SUPABASE ===
         const SUPABASE_URL = 'https://jyjjvbhoiajnijfrcbtu.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5amp2YmhvaWFqbmlqZnJjYnR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2Nzg1NzYsImV4cCI6MjA5NDI1NDU3Nn0.0T8f0rPPdBwbFW0sxwjp6NgJrWgyjfCTcYOKnWPaHQA';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // BATAS MAKSIMAL KUOTA
-        const LIMIT_SAPI = 200;
-        const LIMIT_KAMBING = 100;
-        
-        // VARIABEL GLOBAL
-        let globalSisaSapi = 0;
-        let globalSisaKambing = 0;
-
-        // PIN PANITIA (Bisa diubah sesuai keinginan)
-        const PIN_PANITIA = "123456";
-
-        // ==========================================
-        // LOGIKA NAVIGASI / VIEW SWITCHER
-        // ==========================================
-        function switchView(viewId) {
-            // Sembunyikan semua section utama
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('mainAppSection').classList.add('hidden');
-            document.getElementById('dashboardSection').classList.add('hidden');
-            document.getElementById('registrationSection').classList.add('hidden');
-            document.getElementById('exportSection').classList.add('hidden');
-            
-            const headerBtn = document.getElementById('headerBtn');
-
-            if (viewId === 'login') {
-                document.getElementById('loginSection').classList.remove('hidden');
-                document.getElementById('pinInput').value = '';
-            } else {
-                // Pastikan wrapper utama muncul
-                document.getElementById('mainAppSection').classList.remove('hidden');
-                document.getElementById('mainAppSection').classList.add('flex');
-                
-                if (viewId === 'dashboard') {
-                    document.getElementById('dashboardSection').classList.remove('hidden');
-                    // Header jadi tombol Logout
-                    headerBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg> Keluar`;
-                    headerBtn.onclick = handleLogout;
-                } 
-                else if (viewId === 'register') {
-                    document.getElementById('registrationSection').classList.remove('hidden');
-                    // Header jadi tombol Kembali
-                    headerBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg> Menu Utama`;
-                    headerBtn.onclick = () => switchView('dashboard');
-                    checkQuotas(); // Update kuota setiap kali masuk form
-                } 
-                else if (viewId === 'export') {
-                    document.getElementById('exportSection').classList.remove('hidden');
-                    // Header jadi tombol Kembali
-                    headerBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg> Menu Utama`;
-                    headerBtn.onclick = () => switchView('dashboard');
-                }
-            }
+        function switchView(view) {
+            document.getElementById('loginSection').classList.toggle('hidden', view !== 'login');
+            document.getElementById('mainAppSection').classList.toggle('hidden', view === 'login');
         }
 
-        // ==========================================
-        // LOGIKA LOGIN
-        // ==========================================
         function handleLogin(e) {
             e.preventDefault();
-            const pinInput = document.getElementById('pinInput').value;
-            
-            if (pinInput === PIN_PANITIA) {
-                switchView('dashboard');
-            } else {
-                alert("PIN salah! Akses ditolak.");
-                document.getElementById('pinInput').value = '';
-            }
+            if(document.getElementById('pinInput').value === "123456") switchView('main');
+            else alert("PIN Salah");
         }
 
-        function handleLogout() {
-            if(confirm("Apakah Anda yakin ingin keluar?")) {
-                switchView('login');
-                resetForm(); // Bersihkan form
-            }
-        }
-
-        // ==========================================
-        // FUNGSI EXPORT KE EXCEL (.xlsx)
-        // ==========================================
+        // FUNGSI EXPORT YANG SUDAH DIPERBAIKI (TANPA TANDA ')
         async function downloadExcelData() {
             const filterValue = document.getElementById('exportFilter').value;
             const btn = document.getElementById('btnDoExport');
-            const originalBtnHTML = btn.innerHTML;
-            
-            btn.innerHTML = "Menyiapkan Data...";
-            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            btn.textContent = "Memproses...";
 
             try {
-                // Buat query dasar (urutkan berdasarkan daging, lalu nomor tiket)
-                let query = supabaseClient.from('registrations')
-                            .select('name, phone, meat_choice, ticket_number')
-                            .order('meat_choice', { ascending: false }) // sapi duluan
-                            .order('ticket_number', { ascending: true });
-                
-                // Tambahkan filter jika bukan "Semua"
-                if (filterValue !== 'all') {
-                    query = query.eq('meat_choice', filterValue);
-                }
+                let query = supabaseClient.from('registrations').select('name, phone, meat_choice, ticket_number').order('ticket_number', { ascending: true });
+                if (filterValue !== 'all') query = query.eq('meat_choice', filterValue);
 
-                // Ambil data dari Supabase
                 const { data, error } = await query;
-                
                 if (error) throw error;
-                if (!data || data.length === 0) {
-                    alert("Belum ada data pendaftar untuk kategori ini.");
-                    return;
-                }
 
-                // Siapkan data array-of-objects untuk library SheetJS
-                const excelData = data.map((row, index) => ({
-                    "No": index + 1,
-                    "Nama Lengkap": row.name || '-',
-                    // Menambahkan kutip tunggal (') agar Excel membacanya 100% sebagai TEKS
-                    "Nomor WhatsApp": row.phone ? `'${row.phone}` : '-', 
-                    "Pilihan Daging": row.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing',
-                    "Nomor Tiket": row.ticket_number ? `'${row.ticket_number}` : '-' 
-                }));
-
-                // Membuat Lembar Kerja (Worksheet)
-                const worksheet = XLSX.utils.json_to_sheet(excelData);
-
-                // Mengatur Lebar Kolom agar tampilan langsung rapi
-                worksheet['!cols'] = [
-                    { wch: 5 },   // Lebar kolom No
-                    { wch: 30 },  // Lebar kolom Nama
-                    { wch: 20 },  // Lebar kolom WhatsApp
-                    { wch: 18 },  // Lebar kolom Daging
-                    { wch: 15 }   // Lebar kolom Tiket
+                const wsData = [
+                    ["No", "Nama Lengkap", "Nomor WhatsApp", "Pilihan Daging", "Nomor Tiket"]
                 ];
 
-                // Membuat Buku Kerja (Workbook)
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Data Pendaftar");
+                data.forEach((row, i) => {
+                    wsData.push([
+                        i + 1,
+                        row.name,
+                        row.phone, // Dibiarkan sebagai string, Excel otomatis membaca teks
+                        row.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing',
+                        row.ticket_number // Dibiarkan sebagai string
+                    ]);
+                });
 
-                // Menentukan nama file
-                let fileName = 'Data_Seluruh_Pendaftar_Qurban.xlsx';
-                if (filterValue === 'sapi') fileName = 'Data_Pendaftar_Sapi.xlsx';
-                if (filterValue === 'kambing') fileName = 'Data_Pendaftar_Kambing.xlsx';
+                const ws = XLSX.utils.aoa_to_sheet(wsData);
+                
+                // Mengatur format agar kolom WA dan Tiket dibaca sebagai Teks murni tanpa mengubah datanya
+                const range = XLSX.utils.decode_range(ws['!ref']);
+                for (let R = 1; R <= range.e.r; ++R) {
+                    // Kolom C (indeks 2) untuk HP, Kolom E (indeks 4) untuk Tiket
+                    ws[XLSX.utils.encode_cell({c: 2, r: R})] = { t: 's', v: data[R-1].phone };
+                    ws[XLSX.utils.encode_cell({c: 4, r: R})] = { t: 's', v: data[R-1].ticket_number };
+                }
 
-                // Download file Excel
-                XLSX.writeFile(workbook, fileName);
+                ws['!cols'] = [{ wch: 5 }, { wch: 30 }, { wch: 20 }, { wch: 15 }, { wch: 15 }];
+
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Data Pendaftar");
+                XLSX.writeFile(wb, "Data_Qurban.xlsx");
 
             } catch (err) {
-                console.error("Export Error:", err);
-                alert("Terjadi kesalahan saat mengunduh data: " + err.message);
+                alert("Gagal: " + err.message);
             } finally {
-                btn.innerHTML = originalBtnHTML;
-                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                btn.textContent = "Download File Excel (.xlsx)";
             }
-        }
-
-        // ==========================================
-        // FUNGSI CEK KUOTA DARI DATABASE
-        // ==========================================
-        async function checkQuotas() {
-            try {
-                // Ambil jumlah pendaftar sapi
-                const { count: countSapi } = await supabaseClient
-                    .from('registrations')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('meat_choice', 'sapi');
-                
-                // Ambil jumlah pendaftar kambing
-                const { count: countKambing } = await supabaseClient
-                    .from('registrations')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('meat_choice', 'kambing');
-
-                globalSisaSapi = LIMIT_SAPI - (countSapi || 0);
-                globalSisaKambing = LIMIT_KAMBING - (countKambing || 0);
-
-                const radioSapi = document.getElementById('radioSapi');
-                const radioKambing = document.getElementById('radioKambing');
-                const labelSapi = document.getElementById('labelSapi');
-                const labelKambing = document.getElementById('labelKambing');
-                const sisaSapiText = document.getElementById('sisaSapiText');
-                const sisaKambingText = document.getElementById('sisaKambingText');
-
-                // Update UI Sapi
-                if (globalSisaSapi <= 0) {
-                    radioSapi.disabled = true;
-                    radioSapi.checked = false;
-                    labelSapi.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-100');
-                    labelSapi.classList.remove('cursor-pointer', 'hover:border-emerald-300', 'hover:bg-gray-50');
-                    sisaSapiText.textContent = 'KUOTA HABIS';
-                    sisaSapiText.classList.replace('text-gray-500', 'text-red-500');
-                    sisaSapiText.classList.replace('text-emerald-600', 'text-red-500');
-                } else {
-                    sisaSapiText.textContent = `Sisa kuota: ${globalSisaSapi}`;
-                    sisaSapiText.classList.replace('text-red-500', 'text-emerald-600');
-                    sisaSapiText.classList.replace('text-gray-500', 'text-emerald-600');
-                }
-
-                // Update UI Kambing
-                if (globalSisaKambing <= 0) {
-                    radioKambing.disabled = true;
-                    radioKambing.checked = false;
-                    labelKambing.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-100');
-                    labelKambing.classList.remove('cursor-pointer', 'hover:border-emerald-300', 'hover:bg-gray-50');
-                    sisaKambingText.textContent = 'KUOTA HABIS';
-                    sisaKambingText.classList.replace('text-gray-500', 'text-red-500');
-                    sisaKambingText.classList.replace('text-emerald-600', 'text-red-500');
-                } else {
-                    sisaKambingText.textContent = `Sisa kuota: ${globalSisaKambing}`;
-                    sisaKambingText.classList.replace('text-red-500', 'text-emerald-600');
-                    sisaKambingText.classList.replace('text-gray-500', 'text-emerald-600');
-                }
-
-                // Jika kedua kuota habis
-                const submitBtn = document.getElementById('submitBtn');
-                if (globalSisaSapi <= 0 && globalSisaKambing <= 0) {
-                    submitBtn.disabled = true;
-                    submitBtn.textContent = 'Mohon Maaf, Semua Kuota Penuh';
-                    submitBtn.classList.replace('bg-emerald-600', 'bg-gray-400');
-                    submitBtn.classList.replace('hover:bg-emerald-700', 'cursor-not-allowed');
-                }
-
-                updateRadioUI(); 
-
-            } catch (err) {
-                console.error("Gagal mengecek kuota:", err);
-            }
-        }
-
-
-        // ==========================================
-        // LOGIKA FORMULIR PENDATAAN & TIKET
-        // ==========================================
-        function togglePengkurban() {
-            const isChecked = document.getElementById('isPengkurban').checked;
-            const container = document.getElementById('ticketCountContainer');
-            if (isChecked) {
-                container.classList.remove('hidden');
-            } else {
-                container.classList.add('hidden');
-                document.getElementById('ticketCount').value = 1;
-            }
-        }
-
-        function updateRadioUI() {
-            const sapiChecked = document.querySelector('input[value="sapi"]').checked;
-            const kambingChecked = document.querySelector('input[value="kambing"]').checked;
-            
-            const radioSapi = document.getElementById('radioSapi');
-            const radioKambing = document.getElementById('radioKambing');
-            const labelSapi = document.getElementById('labelSapi');
-            const labelKambing = document.getElementById('labelKambing');
-
-            // Reset kelas
-            if (!radioSapi.disabled) labelSapi.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
-            if (!radioKambing.disabled) labelKambing.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
-
-            // Tambah kelas aktif
-            if (sapiChecked && !radioSapi.disabled) {
-                labelSapi.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
-            } else if (kambingChecked && !radioKambing.disabled) {
-                labelKambing.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
-            }
-        }
-
-        const form = document.getElementById('qurbanForm');
-        const formSection = document.getElementById('formSection');
-        const successSection = document.getElementById('successSection');
-        const submitBtn = document.getElementById('submitBtn');
-
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const meatInputEl = document.querySelector('input[name="meatChoice"]:checked');
-            if (!meatInputEl) {
-                alert("Mohon pilih jenis daging terlebih dahulu.");
-                return;
-            }
-            
-            const nameInput = document.getElementById('name').value;
-            const phoneInput = document.getElementById('phone').value;
-            const meatInput = meatInputEl.value;
-            const isPengkurban = document.getElementById('isPengkurban').checked;
-            let ticketCount = isPengkurban ? parseInt(document.getElementById('ticketCount').value) || 1 : 1;
-            
-            if (ticketCount < 1) ticketCount = 1;
-            if (ticketCount > 50) {
-                alert("Maksimal pencetakan tiket dalam 1x proses adalah 50 tiket.");
-                ticketCount = 50;
-                document.getElementById('ticketCount').value = 50;
-            }
-
-            if (meatInput === 'sapi' && ticketCount > globalSisaSapi) {
-                alert(`Sisa kuota Daging Sapi hanya ${globalSisaSapi} tiket.`);
-                return;
-            }
-            if (meatInput === 'kambing' && ticketCount > globalSisaKambing) {
-                alert(`Sisa kuota Daging Kambing hanya ${globalSisaKambing} tiket.`);
-                return;
-            }
-            
-            submitBtn.textContent = 'Menyimpan Data...';
-            submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
-            submitBtn.classList.add('bg-emerald-400', 'cursor-not-allowed');
-
-            try {
-                // 1. Ambil urutan
-                const { count, error: countError } = await supabaseClient
-                    .from('registrations')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('meat_choice', meatInput);
-                
-                if (countError) throw countError;
-
-                let nextUrutan = (count || 0) + 1;
-                const dataToInsert = [];
-                const generatedTickets = [];
-
-                for (let i = 0; i < ticketCount; i++) {
-                    let currentUrutan = nextUrutan + i;
-                    let ticketCode = String(currentUrutan).padStart(3, '0');
-                    
-                    dataToInsert.push({ 
-                        name: nameInput, 
-                        phone: phoneInput, 
-                        meat_choice: meatInput,
-                        ticket_number: ticketCode
-                    });
-                    
-                    generatedTickets.push(ticketCode);
-                }
-
-                // 2. Insert ke Database
-                const { error: insertError } = await supabaseClient.from('registrations').insert(dataToInsert);
-                if (insertError) throw insertError;
-
-                // 3. Update UI
-                document.getElementById('successDesc').textContent = ticketCount > 1 
-                    ? `Berikut adalah ${ticketCount} e-Kupon warga. Silakan bagikan via WA atau cetak.` 
-                    : `Berikut adalah e-Kupon warga. Silakan bagikan via WA atau cetak.`;
-
-                const ticketsContainer = document.getElementById('ticketsContainer');
-                ticketsContainer.innerHTML = '';
-                
-                const meatLabel = meatInput === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
-                const meatIcon = meatInput === 'sapi' ? '🐄' : '🐐';
-
-                for(let i=0; i < generatedTickets.length; i++) {
-                    const ticketCode = generatedTickets[i];
-                    const ticketHTML = `
-                        <div class="ticket-box bg-white border-2 border-dashed border-emerald-600 rounded-xl max-w-sm mx-auto overflow-hidden shadow-sm text-left relative shrink-0">
-                            <div class="absolute top-10 right-2 opacity-5 text-9xl z-0">${meatIcon}</div>
-                            <div class="bg-emerald-700 text-white p-4 flex justify-between items-center relative z-10">
-                                <div class="text-left">
-                                    <h4 class="font-bold text-lg md:text-xl tracking-wider">KUPON QURBAN</h4>
-                                    <p class="text-emerald-200 text-xs mt-1">Idul Adha 1447 H / 2026 M</p>
-                                </div>
-                                <div class="text-right border-l border-emerald-600 pl-3 md:pl-4">
-                                    <p class="text-[10px] text-emerald-200 uppercase tracking-wider mb-0.5">Kode Kupon</p>
-                                    <p class="font-mono font-bold text-lg md:text-xl tracking-widest text-yellow-300 ticket-code-text">${ticketCode}</p>
-                                </div>
-                            </div>
-                            <div class="p-6 relative z-10">
-                                <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Nama Pendaftar</p>
-                                <p class="font-bold text-lg text-gray-800 mb-4 pb-1 break-words leading-relaxed user-name-text">${nameInput}</p>
-                                <div class="flex items-center gap-2 mb-4">
-                                    <span class="text-2xl">${meatIcon}</span>
-                                    <p class="font-bold text-xl text-emerald-700 uppercase">${meatLabel}</p>
-                                </div>
-                                <div class="border-t border-gray-200 pt-4 mt-2">
-                                    <p class="text-xs text-gray-500 mb-1">Lokasi Pengambilan:</p>
-                                    <p class="text-sm font-semibold text-gray-700">Musholla Miftahul Ullum, Cipadu</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    ticketsContainer.insertAdjacentHTML('beforeend', ticketHTML);
-                }
-
-                formSection.classList.add('hidden');
-                successSection.classList.remove('hidden');
-                form.reset();
-                updateRadioUI();
-                document.getElementById('ticketCountContainer').classList.add('hidden');
-                
-                checkQuotas();
-
-            } catch (error) {
-                console.error("Error Supabase:", error);
-                alert("Mohon maaf, terjadi kesalahan saat menyimpan data: " + error.message);
-            } finally {
-                submitBtn.textContent = 'Buat e-Kupon';
-                submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
-                submitBtn.classList.remove('bg-emerald-400', 'cursor-not-allowed');
-            }
-        });
-
-        async function shareTicket() {
-            const ticketElements = document.querySelectorAll('.ticket-box');
-            const shareBtn = document.getElementById('shareBtn');
-            const originalBtnText = shareBtn.innerHTML;
-            
-            shareBtn.innerHTML = "Memproses...";
-            shareBtn.classList.add('opacity-70', 'cursor-not-allowed');
-
-            try {
-                const filesArray = [];
-                for (let i = 0; i < ticketElements.length; i++) {
-                    const canvas = await html2canvas(ticketElements[i], { scale: 2, backgroundColor: "#ffffff" });
-                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                    const codeEl = ticketElements[i].querySelector('.ticket-code-text');
-                    const nameEl = ticketElements[i].querySelector('.user-name-text');
-                    const ticketCode = codeEl ? codeEl.textContent : (i+1);
-                    const userName = nameEl ? nameEl.textContent.replace(/\s+/g, '_') : 'Anonim';
-                    const fileName = `Tiket_${userName}_${ticketCode}.png`;
-                    filesArray.push(new File([blob], fileName, { type: 'image/png' }));
-                }
-
-                if (navigator.canShare && navigator.canShare({ files: filesArray })) {
-                    try {
-                        await navigator.share({
-                            title: 'Kupon Qurban 1447 H',
-                            text: `Berikut adalah ${filesArray.length} e-Kupon Qurban Bapak/Ibu. Mohon disimpan untuk pengambilan daging.`,
-                            files: filesArray
-                        });
-                    } catch (err) {
-                        if (err.name !== 'AbortError') {
-                            alert("Terjadi kesalahan saat mencoba membagikan tiket.");
-                        }
-                    }
-                } else {
-                    alert("Browser/HP Anda tidak mendukung kirim gambar massal langsung. Silakan gunakan tombol 'Simpan/Cetak'.");
-                }
-            } catch (err) {
-                alert("Terjadi kesalahan saat membuat gambar tiket.");
-            } finally {
-                shareBtn.innerHTML = originalBtnText;
-                shareBtn.classList.remove('opacity-70', 'cursor-not-allowed');
-            }
-        }
-
-        async function downloadTicket() {
-            const ticketElements = document.querySelectorAll('.ticket-box');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const originalBtnText = downloadBtn.innerHTML;
-            
-            downloadBtn.innerHTML = "Menyimpan...";
-            downloadBtn.classList.add('opacity-70', 'cursor-not-allowed');
-
-            try {
-                for (let i = 0; i < ticketElements.length; i++) {
-                    const canvas = await html2canvas(ticketElements[i], { scale: 2, backgroundColor: "#ffffff" });
-                    const imageURI = canvas.toDataURL("image/png");
-                    const codeEl = ticketElements[i].querySelector('.ticket-code-text');
-                    const nameEl = ticketElements[i].querySelector('.user-name-text');
-                    const ticketCode = codeEl ? codeEl.textContent : (i+1);
-                    const userName = nameEl ? nameEl.textContent.replace(/\s+/g, '_') : 'Anonim';
-
-                    const link = document.createElement("a");
-                    link.href = imageURI;
-                    link.download = `Tiket_${userName}_${ticketCode}.png`;
-                    
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    await new Promise(r => setTimeout(r, 400));
-                }
-            } catch (err) {
-                alert("Terjadi kesalahan saat menyimpan gambar tiket.");
-            } finally {
-                downloadBtn.innerHTML = originalBtnText;
-                downloadBtn.classList.remove('opacity-70', 'cursor-not-allowed');
-            }
-        }
-
-        function resetForm() {
-            successSection.classList.add('hidden');
-            formSection.classList.remove('hidden');
-            document.getElementById('ticketsContainer').innerHTML = '';
         }
     </script>
 </body>

@@ -10,6 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- LIBRARY SUPABASE JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- LIBRARY UNTUK EXPORT EXCEL (.xlsx) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         html { scroll-behavior: smooth; }
         .transition-max-height { transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out, opacity 0.3s ease-in-out; }
@@ -97,7 +99,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
                         </div>
                         <h3 class="text-xl font-bold text-blue-900 mb-2">Export Data (Excel)</h3>
-                        <p class="text-sm text-gray-500">Mengunduh data pendaftar yang sudah masuk ke dalam format Excel (CSV).</p>
+                        <p class="text-sm text-gray-500">Mengunduh data pendaftar yang sudah masuk ke dalam format tabel Excel (.xlsx) yang rapi.</p>
                     </div>
                 </div>
             </div>
@@ -202,7 +204,7 @@
             <div id="exportSection" class="w-full max-w-xl hidden w-full">
                 <div class="mb-8 text-center">
                     <h2 class="text-2xl font-bold text-blue-900 mb-2 font-serif">Export Data Pendaftar</h2>
-                    <p class="text-gray-600 text-sm">Unduh data ke format Excel (CSV) yang sudah tersusun rapi.</p>
+                    <p class="text-gray-600 text-sm">Unduh data ke format Excel (.xlsx) yang sudah diformat rapi dengan tabel.</p>
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-200">
@@ -217,12 +219,12 @@
 
                     <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 text-sm text-blue-800 flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5 text-blue-600"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-                        <p>Format nomor WhatsApp dan Nomor Tiket otomatis disesuaikan (<code>="08..."</code> / <code>="001"</code>) agar angka 0 di depan tidak terhapus oleh Excel.</p>
+                        <p>File akan diunduh dalam format <strong>.xlsx</strong> asli. Lebar kolom sudah otomatis disesuaikan, dan nomor WhatsApp / Tiket dijamin tidak akan kehilangan angka 0 di depannya.</p>
                     </div>
 
-                    <button onclick="downloadCSVData()" id="btnDoExport" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2">
+                    <button onclick="downloadExcelData()" id="btnDoExport" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
-                        Download File Excel (CSV)
+                        Download File Excel (.xlsx)
                     </button>
                 </div>
             </div>
@@ -313,9 +315,9 @@
         }
 
         // ==========================================
-        // FUNGSI EXPORT KE CSV / EXCEL
+        // FUNGSI EXPORT KE EXCEL (.xlsx)
         // ==========================================
-        async function downloadCSVData() {
+        async function downloadExcelData() {
             const filterValue = document.getElementById('exportFilter').value;
             const btn = document.getElementById('btnDoExport');
             const originalBtnHTML = btn.innerHTML;
@@ -344,36 +346,39 @@
                     return;
                 }
 
-                // Susun string format CSV
-                let csvContent = "Nama Lengkap,Nomor WhatsApp,Pilihan Daging,Nomor Tiket\n";
-                
-                data.forEach(row => {
-                    const name = `"${row.name || '-'}"`;
-                    // FORMAT EXCEL FORCE TEXT UNTUK WHATSAPP: ="0812xxxx" (mencegah excel menghapus 0)
-                    const phone = `="` + (row.phone || '-') + `"`;
-                    const meat = row.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
-                    
-                    // FORMAT EXCEL FORCE TEXT UNTUK TIKET: ="001" (mencegah excel menghapus 0)
-                    const ticket = row.ticket_number ? `="` + row.ticket_number + `"` : '-';
-                    
-                    csvContent += `${name},${phone},${meat},${ticket}\n`;
-                });
+                // Siapkan data array-of-objects untuk library SheetJS
+                const excelData = data.map((row, index) => ({
+                    "No": index + 1,
+                    "Nama Lengkap": row.name || '-',
+                    // Menambahkan kutip tunggal (') agar Excel membacanya 100% sebagai TEKS
+                    "Nomor WhatsApp": row.phone ? `'${row.phone}` : '-', 
+                    "Pilihan Daging": row.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing',
+                    "Nomor Tiket": row.ticket_number ? `'${row.ticket_number}` : '-' 
+                }));
 
-                // Proses Download
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                
-                // Tentukan nama file
-                let fileName = 'Data_Seluruh_Pendaftar_Qurban.csv';
-                if (filterValue === 'sapi') fileName = 'Data_Pendaftar_Sapi.csv';
-                if (filterValue === 'kambing') fileName = 'Data_Pendaftar_Kambing.csv';
+                // Membuat Lembar Kerja (Worksheet)
+                const worksheet = XLSX.utils.json_to_sheet(excelData);
 
-                link.setAttribute("href", url);
-                link.setAttribute("download", fileName);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                // Mengatur Lebar Kolom agar tampilan langsung rapi
+                worksheet['!cols'] = [
+                    { wch: 5 },   // Lebar kolom No
+                    { wch: 30 },  // Lebar kolom Nama
+                    { wch: 20 },  // Lebar kolom WhatsApp
+                    { wch: 18 },  // Lebar kolom Daging
+                    { wch: 15 }   // Lebar kolom Tiket
+                ];
+
+                // Membuat Buku Kerja (Workbook)
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Data Pendaftar");
+
+                // Menentukan nama file
+                let fileName = 'Data_Seluruh_Pendaftar_Qurban.xlsx';
+                if (filterValue === 'sapi') fileName = 'Data_Pendaftar_Sapi.xlsx';
+                if (filterValue === 'kambing') fileName = 'Data_Pendaftar_Kambing.xlsx';
+
+                // Download file Excel
+                XLSX.writeFile(workbook, fileName);
 
             } catch (err) {
                 console.error("Export Error:", err);

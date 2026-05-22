@@ -17,27 +17,53 @@
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col">
 
-    <!-- Konten disederhanakan untuk fokus ke perbaikan Excel -->
+    <!-- Section Login -->
     <div id="loginSection" class="flex-1 flex flex-col justify-center items-center px-4 py-12 bg-emerald-800 relative">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative z-10">
             <h2 class="text-2xl font-bold text-emerald-900 text-center mb-6">Panel Panitia Qurban</h2>
             <form id="loginForm" onsubmit="handleLogin(event)">
-                <input type="password" id="pinInput" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl mb-4 text-center text-2xl font-mono" placeholder="••••••">
-                <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl">Masuk</button>
+                <input type="password" id="pinInput" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl mb-4 text-center text-2xl font-mono" placeholder="PIN Akses">
+                <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700">Masuk</button>
             </form>
         </div>
     </div>
 
+    <!-- Section Utama -->
     <div id="mainAppSection" class="hidden flex-1 flex-col">
-        <header class="bg-emerald-800 text-white p-4">
-            <div class="max-w-4xl mx-auto flex justify-between">
-                <h1 class="font-bold">Aplikasi Pendataan Qurban</h1>
-                <button onclick="switchView('login')" class="text-sm bg-emerald-700 px-3 py-1 rounded">Keluar</button>
+        <header class="bg-emerald-800 text-white p-4 shadow-md">
+            <div class="max-w-4xl mx-auto flex justify-between items-center">
+                <h1 class="font-bold text-lg">Aplikasi Pendataan Qurban</h1>
+                <div class="space-x-2">
+                    <button onclick="showPage('list')" class="text-sm bg-emerald-700 px-3 py-1 rounded">Data Warga</button>
+                    <button onclick="showPage('export')" class="text-sm bg-emerald-700 px-3 py-1 rounded">Export</button>
+                    <button onclick="switchView('login')" class="text-sm bg-red-600 px-3 py-1 rounded">Keluar</button>
+                </div>
             </div>
         </header>
 
         <main class="flex-1 p-4 flex flex-col items-center">
-            <div id="exportSection" class="w-full max-w-xl">
+            <!-- Halaman Daftar Warga -->
+            <div id="pageList" class="w-full max-w-4xl">
+                <h2 class="text-2xl font-bold text-emerald-900 mb-6">Daftar Penerima Qurban</h2>
+                <div id="listContainer" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-gray-500 border-b">
+                                <th class="pb-3">Nama</th>
+                                <th class="pb-3">WhatsApp</th>
+                                <th class="pb-3">Pilihan</th>
+                                <th class="pb-3 text-center">Tiket</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Data dimuat lewat JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Halaman Export -->
+            <div id="pageExport" class="w-full max-w-xl hidden">
                 <h2 class="text-2xl font-bold text-blue-900 mb-6 text-center">Export Data ke Excel</h2>
                 <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
                     <select id="exportFilter" class="w-full px-4 py-3 border rounded-xl mb-6 bg-gray-50">
@@ -45,7 +71,7 @@
                         <option value="sapi">Khusus Daging Sapi</option>
                         <option value="kambing">Khusus Daging Kambing</option>
                     </select>
-                    <button onclick="downloadExcelData()" id="btnDoExport" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl">
+                    <button onclick="downloadExcelData()" id="btnDoExport" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700">
                         Download File Excel (.xlsx)
                     </button>
                 </div>
@@ -61,6 +87,26 @@
         function switchView(view) {
             document.getElementById('loginSection').classList.toggle('hidden', view !== 'login');
             document.getElementById('mainAppSection').classList.toggle('hidden', view === 'login');
+            if (view === 'main') showPage('list');
+        }
+
+        function showPage(page) {
+            document.getElementById('pageList').classList.toggle('hidden', page !== 'list');
+            document.getElementById('pageExport').classList.toggle('hidden', page !== 'export');
+            if (page === 'list') loadData();
+        }
+
+        async function loadData() {
+            const { data } = await supabaseClient.from('registrations').select('*').order('ticket_number');
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = data.map(r => `
+                <tr class="border-b">
+                    <td class="py-3 font-medium">${r.name}</td>
+                    <td class="py-3 text-sm">${r.phone}</td>
+                    <td class="py-3 uppercase text-xs font-bold text-emerald-600">${r.meat_choice}</td>
+                    <td class="py-3 text-center font-mono font-bold">${r.ticket_number}</td>
+                </tr>
+            `).join('');
         }
 
         function handleLogin(e) {
@@ -69,7 +115,6 @@
             else alert("PIN Salah");
         }
 
-        // FUNGSI EXPORT YANG SUDAH DIPERBAIKI (TANPA TANDA ')
         async function downloadExcelData() {
             const filterValue = document.getElementById('exportFilter').value;
             const btn = document.getElementById('btnDoExport');
@@ -82,36 +127,21 @@
                 const { data, error } = await query;
                 if (error) throw error;
 
-                const wsData = [
-                    ["No", "Nama Lengkap", "Nomor WhatsApp", "Pilihan Daging", "Nomor Tiket"]
-                ];
-
+                const wsData = [["No", "Nama Lengkap", "Nomor WhatsApp", "Pilihan Daging", "Nomor Tiket"]];
                 data.forEach((row, i) => {
-                    wsData.push([
-                        i + 1,
-                        row.name,
-                        row.phone, // Dibiarkan sebagai string, Excel otomatis membaca teks
-                        row.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing',
-                        row.ticket_number // Dibiarkan sebagai string
-                    ]);
+                    wsData.push([i + 1, row.name, row.phone, row.meat_choice, row.ticket_number]);
                 });
 
                 const ws = XLSX.utils.aoa_to_sheet(wsData);
-                
-                // Mengatur format agar kolom WA dan Tiket dibaca sebagai Teks murni tanpa mengubah datanya
                 const range = XLSX.utils.decode_range(ws['!ref']);
                 for (let R = 1; R <= range.e.r; ++R) {
-                    // Kolom C (indeks 2) untuk HP, Kolom E (indeks 4) untuk Tiket
                     ws[XLSX.utils.encode_cell({c: 2, r: R})] = { t: 's', v: data[R-1].phone };
                     ws[XLSX.utils.encode_cell({c: 4, r: R})] = { t: 's', v: data[R-1].ticket_number };
                 }
-
                 ws['!cols'] = [{ wch: 5 }, { wch: 30 }, { wch: 20 }, { wch: 15 }, { wch: 15 }];
-
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Data Pendaftar");
                 XLSX.writeFile(wb, "Data_Qurban.xlsx");
-
             } catch (err) {
                 alert("Gagal: " + err.message);
             } finally {

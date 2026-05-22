@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penyaluran Daging Qurban Idul Adha 1447 H</title>
-    <!-- MENGGUNAKAN TAILWIND CSS MELALUI CDN UNTUK STYLING INSTAN -->
+    <title>Aplikasi Panitia Qurban RT 06</title>
+    <!-- MENGGUNAKAN TAILWIND CSS MELALUI CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- LIBRARY UNTUK DOWNLOAD TIKET MENJADI GAMBAR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- LIBRARY SUPABASE JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* Tambahan styling kecil untuk animasi mulus */
         html { scroll-behavior: smooth; }
         .transition-max-height { transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out, opacity 0.3s ease-in-out; }
         /* Kustom scrollbar untuk area tiket */
@@ -21,259 +20,157 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #059669; }
     </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800">
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col">
 
-    <section class="bg-emerald-800 text-white py-20 px-4 md:px-8 relative overflow-hidden">
+    <!-- ========================================== -->
+    <!-- HALAMAN LOGIN -->
+    <!-- ========================================== -->
+    <div id="loginSection" class="flex-1 flex flex-col justify-center items-center px-4 py-12 bg-emerald-800 relative overflow-hidden">
+        <!-- Background Pattern -->
         <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
-        <div class="max-w-4xl mx-auto text-center relative z-10">
-            <h1 class="text-4xl md:text-6xl font-bold mb-4 font-serif">Penyaluran Daging Qurban Idul Adha 1447 H</h1>
-            <p class="text-xl md:text-2xl mb-8 text-emerald-100">RT 006 / RW 06 - CIPADU</p>
-            
-            <div class="flex flex-col md:flex-row justify-center items-center gap-6 text-emerald-50 mb-8">
-                <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-300"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                    <span>Rabu, 27 Mei 2026</span>
+        
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative z-10">
+            <div class="text-center mb-8">
+                <div class="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 </div>
-                <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-300"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                    <span>Musholla Miftahul Ullum, Cipadu</span>
-                </div>
+                <h2 class="text-2xl font-bold text-emerald-900 font-serif">Panel Panitia Qurban</h2>
+                <p class="text-gray-500 text-sm mt-1">RT 006 / RW 06 Cipadu</p>
             </div>
             
-            <a href="#register" class="inline-block bg-yellow-500 hover:bg-yellow-400 text-emerald-900 font-bold py-3 px-8 rounded-full transition-colors duration-300 shadow-lg transform hover:-translate-y-1">
-                Daftar Sekarang
-            </a>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-gray-700 mb-2" for="pinInput">Masukkan PIN Panitia</label>
+                    <input type="password" id="pinInput" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-0 focus:border-emerald-500 outline-none transition-all text-center text-2xl tracking-widest font-mono" placeholder="••••••">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-lg">
+                    Masuk
+                </button>
+            </form>
         </div>
-    </section>
+    </div>
 
-    <section id="rundown" class="py-16 px-4 bg-emerald-50">
-        <div class="max-w-3xl mx-auto">
-            <h2 class="text-3xl font-bold text-center text-emerald-900 mb-10 font-serif">Rundown Acara</h2>
-            <div class="space-y-6">
-                <!-- Item 1 -->
-                <div class="flex flex-col md:flex-row bg-white p-6 rounded-lg shadow-sm border border-emerald-100 items-start md:items-center gap-4 hover:shadow-md transition-shadow">
-                    <div class="flex items-center gap-2 text-emerald-700 md:w-1/3 shrink-0 font-semibold">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        <span>06:30 - 07:30 WIB</span>
-                    </div>
-                    <div class="text-gray-700 text-lg">Shalat Idul Adha Berjamaah</div>
+
+    <!-- ========================================== -->
+    <!-- HALAMAN UTAMA PANITIA (Daftar & Kupon) -->
+    <!-- ========================================== -->
+    <div id="mainAppSection" class="hidden flex-1 flex flex-col">
+        
+        <!-- Header / Navbar -->
+        <header class="bg-emerald-800 text-white shadow-md sticky top-0 z-50">
+            <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+                    <h1 class="font-bold text-lg hidden sm:block">Aplikasi Pendataan Qurban</h1>
+                    <h1 class="font-bold text-lg sm:hidden">Pendataan Qurban</h1>
                 </div>
-                <!-- Item 2 -->
-                <div class="flex flex-col md:flex-row bg-white p-6 rounded-lg shadow-sm border border-emerald-100 items-start md:items-center gap-4 hover:shadow-md transition-shadow">
-                    <div class="flex items-center gap-2 text-emerald-700 md:w-1/3 shrink-0 font-semibold">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        <span>08:00 - 09:00 WIB</span>
-                    </div>
-                    <div class="text-gray-700 text-lg">Penyembelihan Hewan Kurban</div>
-                </div>
-                <!-- Item 3 -->
-                <div class="flex flex-col md:flex-row bg-white p-6 rounded-lg shadow-sm border border-emerald-100 items-start md:items-center gap-4 hover:shadow-md transition-shadow">
-                    <div class="flex items-center gap-2 text-emerald-700 md:w-1/3 shrink-0 font-semibold">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        <span>09:00 - 13:00 WIB</span>
-                    </div>
-                    <div class="text-gray-700 text-lg">Pemotongan & Pengemasan Daging</div>
-                </div>
-                <!-- Item 4 -->
-                <div class="flex flex-col md:flex-row bg-white p-6 rounded-lg shadow-sm border border-emerald-100 items-start md:items-center gap-4 hover:shadow-md transition-shadow">
-                    <div class="flex items-center gap-2 text-emerald-700 md:w-1/3 shrink-0 font-semibold">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        <span>13:30 - 16:00 WIB</span>
-                    </div>
-                    <div class="text-gray-700 text-lg">Distribusi Daging kepada Warga Terdaftar</div>
-                </div>
+                <button onclick="handleLogout()" class="text-emerald-100 hover:text-white bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                    Keluar
+                </button>
             </div>
-        </div>
-    </section>
+        </header>
 
-    <!-- Visual separator -->
-    <div class="w-full h-12 bg-gradient-to-b from-emerald-50 to-white"></div>
+        <!-- Area Konten Utama -->
+        <main class="flex-1 py-8 px-4 bg-gray-50">
+            <div class="max-w-2xl mx-auto">
+                
+                <!-- Area Formulir -->
+                <div id="formSection">
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-emerald-900 mb-2 font-serif">Formulir Pendaftaran Warga</h2>
+                        <p class="text-gray-600 text-sm">Isi data warga untuk membuat e-Kupon antrean.</p>
+                    </div>
 
-    <section id="register" class="py-16 px-4 bg-white relative">
-        <div class="max-w-2xl mx-auto relative z-10">
-            
-            <!-- Area Formulir -->
-            <div id="formSection">
-                <div class="text-center mb-10">
-                    <h2 class="text-3xl font-bold text-emerald-900 mb-4 font-serif">Formulir Pendaftaran</h2>
-                    <p class="text-gray-600">Isi data di bawah ini untuk menerima kupon pembagian daging.</p>
-                </div>
+                    <form id="qurbanForm" class="bg-white rounded-2xl shadow-sm p-6 border border-gray-200">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2" for="name">Nama Lengkap (Sesuai KTP)</label>
+                                <input type="text" id="name" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all bg-gray-50" placeholder="Masukkan nama warga">
+                            </div>
 
-                <form id="qurbanForm" class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1" for="name">Nama Lengkap (Sesuai KTP)</label>
-                            <input type="text" id="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all" placeholder="Masukkan nama lengkap">
-                        </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2" for="phone">Nomor WhatsApp</label>
+                                <input type="tel" id="phone" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all bg-gray-50" placeholder="0812xxxxxxxx">
+                            </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1" for="phone">Nomor WhatsApp</label>
-                            <input type="tel" id="phone" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all" placeholder="0812xxxxxxxx">
-                        </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-3">Pilihan Daging</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative" id="labelSapi">
+                                        <input type="radio" name="meatChoice" value="sapi" id="radioSapi" class="sr-only" onchange="updateRadioUI()">
+                                        <span class="text-4xl mb-2">🐄</span>
+                                        <span class="font-bold text-gray-800">Daging Sapi</span>
+                                        <span id="sisaSapiText" class="text-xs font-medium text-gray-500 mt-1">Mengecek kuota...</span>
+                                    </label>
+                                    
+                                    <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative" id="labelKambing">
+                                        <input type="radio" name="meatChoice" value="kambing" id="radioKambing" class="sr-only" onchange="updateRadioUI()">
+                                        <span class="text-4xl mb-2">🐐</span>
+                                        <span class="font-bold text-gray-800">Daging Kambing</span>
+                                        <span id="sisaKambingText" class="text-xs font-medium text-gray-500 mt-1">Mengecek kuota...</span>
+                                    </label>
+                                </div>
+                            </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-3">Pilihan Daging</label>
-                            <div class="grid grid-cols-2 gap-4">
-                                <!-- Ditambahkan id input radio dan span teks sisa kuota -->
-                                <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative" id="labelSapi">
-                                    <input type="radio" name="meatChoice" value="sapi" id="radioSapi" class="sr-only" onchange="updateRadioUI()">
-                                    <span class="text-4xl mb-2">🐄</span>
-                                    <span class="font-medium text-gray-800">Daging Sapi</span>
-                                    <span id="sisaSapiText" class="text-xs font-medium text-gray-500 mt-1">Mengecek kuota...</span>
+                            <!-- Area Opsi Pengkurban -->
+                            <div class="mt-2 p-5 bg-emerald-50 rounded-xl border border-emerald-200">
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" id="isPengkurban" class="mt-1 w-5 h-5 text-emerald-600 rounded border-emerald-300 focus:ring-emerald-500 transition-all" onchange="togglePengkurban()">
+                                    <div>
+                                        <span class="font-bold text-emerald-900 block">Warga ini adalah Pengkurban (Shohibul Qurban)</span>
+                                        <span class="text-xs text-emerald-700 block mt-0.5 leading-relaxed">Centang opsi ini untuk membuat tiket ganda (Batch) bagi pengkurban.</span>
+                                    </div>
                                 </label>
                                 
-                                <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative" id="labelKambing">
-                                    <input type="radio" name="meatChoice" value="kambing" id="radioKambing" class="sr-only" onchange="updateRadioUI()">
-                                    <span class="text-4xl mb-2">🐐</span>
-                                    <span class="font-medium text-gray-800">Daging Kambing</span>
-                                    <span id="sisaKambingText" class="text-xs font-medium text-gray-500 mt-1">Mengecek kuota...</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Area Opsi Pengkurban -->
-                        <div class="mt-4 p-5 bg-emerald-50 rounded-lg border border-emerald-200">
-                            <label class="flex items-start gap-3 cursor-pointer">
-                                <input type="checkbox" id="isPengkurban" class="mt-1 w-5 h-5 text-emerald-600 rounded border-emerald-300 focus:ring-emerald-500 transition-all" onchange="togglePengkurban()">
-                                <div>
-                                    <span class="font-bold text-emerald-900 block">Saya adalah Pengkurban (Shohibul Qurban)</span>
-                                    <span class="text-xs text-emerald-700 block mt-0.5 leading-relaxed">Centang opsi ini jika Anda ingin mencetak banyak kupon sekaligus untuk disedekahkan/dibagikan ke kerabat.</span>
-                                </div>
-                            </label>
-                            
-                            <div id="ticketCountContainer" class="mt-4 hidden transition-all duration-300 ease-in-out">
-                                <div class="border-t border-emerald-200 pt-4">
-                                    <label class="block text-sm font-bold text-gray-700 mb-2" for="ticketCount">Jumlah Tiket yang Ingin Dicetak</label>
-                                    <input type="number" id="ticketCount" min="1" max="50" value="1" class="w-full px-4 py-2 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-semibold text-lg" placeholder="Contoh: 4">
-                                    <p class="text-[11px] font-medium text-emerald-600 mt-1.5">*Maksimal 50 tiket dalam satu kali proses.</p>
+                                <div id="ticketCountContainer" class="mt-4 hidden transition-all duration-300 ease-in-out">
+                                    <div class="border-t border-emerald-200 pt-4">
+                                        <label class="block text-sm font-bold text-gray-700 mb-2" for="ticketCount">Jumlah Tiket yang Ingin Dicetak</label>
+                                        <input type="number" id="ticketCount" min="1" max="50" value="1" class="w-full px-4 py-2 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-semibold text-lg" placeholder="Contoh: 4">
+                                        <p class="text-[11px] font-medium text-emerald-600 mt-1.5">*Maksimal 50 tiket dalam satu kali proses.</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <button type="submit" id="submitBtn" class="w-full py-4 px-6 rounded-xl text-white font-bold text-lg shadow-md transition-all bg-emerald-600 hover:bg-emerald-700 hover:shadow-lg transform hover:-translate-y-0.5">
-                            Kirim Pendaftaran
+                            <button type="submit" id="submitBtn" class="w-full py-4 px-6 rounded-xl text-white font-bold text-lg shadow-md transition-all bg-emerald-600 hover:bg-emerald-700 transform hover:-translate-y-0.5 mt-4">
+                                Buat e-Kupon
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Area Sukses (Pop Up Tiket) -->
+                <div id="successSection" class="hidden bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-emerald-200 text-center">
+                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-emerald-900 mb-2">Pembuatan Kupon Berhasil!</h3>
+                    <p id="successDesc" class="text-gray-600 mb-6 text-sm">Berikut adalah e-Kupon warga. Silakan bagikan via WA atau simpan/cetak.</p>
+                    
+                    <!-- TIKET PREVIEW CONTAINER SCROLLABLE -->
+                    <div id="ticketsContainer" class="custom-scrollbar max-h-[50vh] overflow-y-auto px-2 pb-4 mb-6 space-y-6">
+                        <!-- Tiket-tiket akan dimunculkan di sini menggunakan Javascript -->
+                    </div>
+
+                    <!-- Tombol Aksi Tiket -->
+                    <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 border-t border-gray-100 pt-6 mt-4">
+                        <button onclick="shareTicket()" id="shareBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                            Kirim WA
+                        </button>
+                        <button onclick="downloadTicket()" id="downloadBtn" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-emerald-900 font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                            Simpan/Cetak
+                        </button>
+                        <button onclick="resetForm()" class="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-xl transition-colors">
+                            Kembali
                         </button>
                     </div>
-                </form>
-            </div>
-
-            <!-- Area Sukses (Pop Up Tiket) -->
-            <div id="successSection" class="hidden bg-white p-6 md:p-8 rounded-xl shadow-lg text-center border-t-4 border-emerald-500 max-w-3xl mx-auto">
-                <h3 class="text-2xl font-bold text-emerald-900 mb-2">Pendaftaran Berhasil!</h3>
-                <p id="successDesc" class="text-gray-600 mb-6">Berikut adalah tiket (kupon) Anda. Silakan bagikan atau simpan gambar ini sebagai bukti pengambilan.</p>
-                
-                <!-- TIKET PREVIEW CONTAINER SCROLLABLE -->
-                <div id="ticketsContainer" class="custom-scrollbar max-h-[60vh] overflow-y-auto px-2 pb-4 mb-6 space-y-6">
-                    <!-- Tiket-tiket akan dimunculkan di sini menggunakan Javascript -->
-                </div>
-
-                <!-- Tombol Aksi Tiket -->
-                <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 border-t border-gray-100 pt-6 mt-4">
-                    <button onclick="shareTicket()" id="shareBtn" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-5 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                        Bagikan Tiket
-                    </button>
-                    <button onclick="downloadTicket()" id="downloadBtn" class="bg-yellow-500 hover:bg-yellow-400 text-emerald-900 font-bold py-3 px-5 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                        Simpan Tiket
-                    </button>
-                    <button onclick="resetForm()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-5 rounded-lg transition-colors">
-                        Selesai
-                    </button>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <section class="py-16 px-4 bg-emerald-800 text-white">
-        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-10">
-            <div class="md:w-1/2 space-y-6">
-                <h2 class="text-3xl font-bold font-serif">Lokasi Pengambilan</h2>
-                <p class="text-emerald-100 text-lg leading-relaxed">
-                    Pengambilan daging kurban akan dilaksanakan di area Musholla Miftahul Ullum. 
-                    Harap ikuti petunjuk arah yang telah disediakan oleh panitia di lokasi.
-                </p>
-                <div class="bg-emerald-900/50 p-6 rounded-lg border border-emerald-700/50">
-                    <div class="flex items-start gap-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400 shrink-0 mt-1"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                        <div>
-                            <h4 class="font-bold text-yellow-400 mb-1">Penting</h4>
-                            <p class="text-sm text-emerald-100">Harap tunjukkan bukti e-ticket ke petugas qurban saat pengambilan daging.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="md:w-1/2 w-full h-80 bg-gray-200 rounded-xl overflow-hidden shadow-xl border-4 border-emerald-700 relative flex items-center justify-center">
-                <!-- Iframe Google Maps Musholla Miftakhul Ullum Cipadu -->
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.195610815456!2d106.7454848!3d-6.2379234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f1f89ec2d31f%3A0x2ed29dd5259768a6!2sMushola%20Miftahul%20Ulum!5e0!3m2!1sen!2sid!4v1713500000000!5m2!1sen!2sid" 
-                    width="100%" 
-                    height="100%" 
-                    style="border:0; position:absolute; inset:0;" 
-                    allowfullscreen="" 
-                    loading="lazy" 
-                    referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-16 px-4 bg-white">
-        <div class="max-w-3xl mx-auto">
-            <h2 class="text-3xl font-bold text-center text-emerald-900 mb-10 font-serif">Pertanyaan yang Sering Diajukan</h2>
-            <div class="space-y-4">
-                
-                <!-- FAQ 1 -->
-                <div class="border border-gray-200 rounded-lg overflow-hidden">
-                    <button onclick="toggleFAQ(this)" class="w-full px-6 py-4 text-left bg-gray-50 hover:bg-emerald-50 flex justify-between items-center transition-colors focus:outline-none">
-                        <span class="font-medium text-gray-800 pr-4">Apakah saya harus membawa KTP saat mengambil daging?</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0 icon-down"><path d="m6 9 6 6 6-6"/></svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600 shrink-0 icon-up hidden"><path d="m18 15-6-6-6 6"/></svg>
-                    </button>
-                    <div class="faq-content px-6 transition-max-height max-h-0 opacity-0 overflow-hidden">
-                        <p class="text-gray-600 pb-4">Ya, mohon membawa KTP asli dan bukti pendaftaran (screenshot/cetak) untuk keperluan verifikasi oleh panitia.</p>
-                    </div>
-                </div>
-
-                <!-- FAQ 2 -->
-                <div class="border border-gray-200 rounded-lg overflow-hidden">
-                    <button onclick="toggleFAQ(this)" class="w-full px-6 py-4 text-left bg-gray-50 hover:bg-emerald-50 flex justify-between items-center transition-colors focus:outline-none">
-                        <span class="font-medium text-gray-800 pr-4">Bolehkah saya mengambilkan jatah untuk orang lain?</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0 icon-down"><path d="m6 9 6 6 6-6"/></svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600 shrink-0 icon-up hidden"><path d="m18 15-6-6-6 6"/></svg>
-                    </button>
-                    <div class="faq-content px-6 transition-max-height max-h-0 opacity-0 overflow-hidden">
-                        <p class="text-gray-600 pb-4">Boleh, asalkan membawa salinan KTP dan bukti pendaftaran (screenshot) milik orang yang diwakilkan tersebut.</p>
-                    </div>
-                </div>
-
-                <!-- FAQ 3 -->
-                <div class="border border-gray-200 rounded-lg overflow-hidden">
-                    <button onclick="toggleFAQ(this)" class="w-full px-6 py-4 text-left bg-gray-50 hover:bg-emerald-50 flex justify-between items-center transition-colors focus:outline-none">
-                        <span class="font-medium text-gray-800 pr-4">Apa yang terjadi jika saya datang terlambat?</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0 icon-down"><path d="m6 9 6 6 6-6"/></svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600 shrink-0 icon-up hidden"><path d="m18 15-6-6-6 6"/></svg>
-                    </button>
-                    <div class="faq-content px-6 transition-max-height max-h-0 opacity-0 overflow-hidden">
-                        <p class="text-gray-600 pb-4">Daging akan dialokasikan ke pendaftar cadangan atau warga sekitar jika Anda tidak hadir hingga pukul 16:00 WIB.</p>
-                    </div>
                 </div>
 
             </div>
-        </div>
-    </section>
-
-    <footer class="bg-gray-900 text-gray-400 py-10 text-center">
-        <div class="max-w-4xl mx-auto px-4">
-            <p class="mb-4">© 2026 Panitia Qurban Mushola Miftahul Ulum. Hak Cipta Dilindungi.</p>
-            <div class="flex justify-center gap-4 text-sm">
-                <a href="#" class="hover:text-emerald-400 transition-colors">Bantuan WhatsApp</a>
-                <span>|</span>
-                <a href="#" class="hover:text-emerald-400 transition-colors">Kebijakan Privasi</a>
-            </div>
-        </div>
-    </footer>
+        </main>
+    </div>
 
     <script>
         // === KONFIGURASI SUPABASE ===
@@ -285,11 +182,48 @@
         const LIMIT_SAPI = 200;
         const LIMIT_KAMBING = 100;
         
-        // VARIABEL GLOBAL SISA KUOTA (Disimpan untuk validasi saat submit)
+        // VARIABEL GLOBAL SISA KUOTA
         let globalSisaSapi = 0;
         let globalSisaKambing = 0;
 
+        // PIN PANITIA (Bisa diubah sesuai keinginan)
+        const PIN_PANITIA = "123456";
+
+        // ==========================================
+        // LOGIKA LOGIN
+        // ==========================================
+        function handleLogin(e) {
+            e.preventDefault();
+            const pinInput = document.getElementById('pinInput').value;
+            
+            if (pinInput === PIN_PANITIA) {
+                // PIN Benar: Sembunyikan login, tampilkan aplikasi
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('mainAppSection').classList.remove('hidden');
+                document.getElementById('mainAppSection').classList.add('flex');
+                
+                // Load data kuota untuk pertama kalinya
+                checkQuotas();
+            } else {
+                // PIN Salah
+                alert("PIN salah! Akses ditolak.");
+                document.getElementById('pinInput').value = '';
+            }
+        }
+
+        function handleLogout() {
+            if(confirm("Apakah Anda yakin ingin keluar?")) {
+                document.getElementById('mainAppSection').classList.add('hidden');
+                document.getElementById('mainAppSection').classList.remove('flex');
+                document.getElementById('loginSection').classList.remove('hidden');
+                document.getElementById('pinInput').value = '';
+                resetForm();
+            }
+        }
+
+        // ==========================================
         // FUNGSI CEK KUOTA DARI DATABASE
+        // ==========================================
         async function checkQuotas() {
             try {
                 // Ambil jumlah pendaftar sapi
@@ -317,15 +251,15 @@
                 // Update UI Sapi
                 if (globalSisaSapi <= 0) {
                     radioSapi.disabled = true;
-                    radioSapi.checked = false; // Batalkan pilihan jika terlanjur dipilih
+                    radioSapi.checked = false;
                     labelSapi.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-100');
                     labelSapi.classList.remove('cursor-pointer', 'hover:border-emerald-300', 'hover:bg-gray-50');
                     sisaSapiText.textContent = 'KUOTA HABIS';
                     sisaSapiText.classList.replace('text-gray-500', 'text-red-500');
                     sisaSapiText.classList.replace('text-emerald-600', 'text-red-500');
-                    sisaSapiText.classList.add('font-bold');
                 } else {
                     sisaSapiText.textContent = `Sisa kuota: ${globalSisaSapi}`;
+                    sisaSapiText.classList.replace('text-red-500', 'text-emerald-600');
                     sisaSapiText.classList.replace('text-gray-500', 'text-emerald-600');
                 }
 
@@ -338,32 +272,31 @@
                     sisaKambingText.textContent = 'KUOTA HABIS';
                     sisaKambingText.classList.replace('text-gray-500', 'text-red-500');
                     sisaKambingText.classList.replace('text-emerald-600', 'text-red-500');
-                    sisaKambingText.classList.add('font-bold');
                 } else {
                     sisaKambingText.textContent = `Sisa kuota: ${globalSisaKambing}`;
+                    sisaKambingText.classList.replace('text-red-500', 'text-emerald-600');
                     sisaKambingText.classList.replace('text-gray-500', 'text-emerald-600');
                 }
 
-                // Jika kedua kuota habis, matikan tombol pendaftaran
+                // Jika kedua kuota habis
                 const submitBtn = document.getElementById('submitBtn');
                 if (globalSisaSapi <= 0 && globalSisaKambing <= 0) {
                     submitBtn.disabled = true;
-                    submitBtn.textContent = 'Mohon Maaf, Kuota Penuh';
+                    submitBtn.textContent = 'Mohon Maaf, Semua Kuota Penuh';
                     submitBtn.classList.replace('bg-emerald-600', 'bg-gray-400');
                     submitBtn.classList.replace('hover:bg-emerald-700', 'cursor-not-allowed');
                 }
 
-                updateRadioUI(); // Refresh UI warna kotak yang terpilih
+                updateRadioUI(); 
 
             } catch (err) {
                 console.error("Gagal mengecek kuota:", err);
             }
         }
 
-        // Panggil fungsi cek kuota pertama kali halaman dimuat
-        window.addEventListener('DOMContentLoaded', checkQuotas);
-
-        // Logika untuk menampilkan/menyembunyikan kolom Pengkurban
+        // ==========================================
+        // LOGIKA FORMULIR & UI
+        // ==========================================
         function togglePengkurban() {
             const isChecked = document.getElementById('isPengkurban').checked;
             const container = document.getElementById('ticketCountContainer');
@@ -371,11 +304,10 @@
                 container.classList.remove('hidden');
             } else {
                 container.classList.add('hidden');
-                document.getElementById('ticketCount').value = 1; // reset ke 1 jika dibatalkan
+                document.getElementById('ticketCount').value = 1;
             }
         }
 
-        // Logika untuk UI Pilihan Radio Button
         function updateRadioUI() {
             const sapiChecked = document.querySelector('input[value="sapi"]').checked;
             const kambingChecked = document.querySelector('input[value="kambing"]').checked;
@@ -385,48 +317,38 @@
             const labelSapi = document.getElementById('labelSapi');
             const labelKambing = document.getElementById('labelKambing');
 
-            // Reset kelas hanya jika tidak disabled (bukan kuota habis)
-            if (!radioSapi.disabled) {
-                labelSapi.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative";
-            }
-            if (!radioKambing.disabled) {
-                labelKambing.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative";
-            }
+            // Reset kelas
+            if (!radioSapi.disabled) labelSapi.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
+            if (!radioKambing.disabled) labelKambing.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
 
             // Tambah kelas aktif
             if (sapiChecked && !radioSapi.disabled) {
-                labelSapi.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative";
+                labelSapi.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
             } else if (kambingChecked && !radioKambing.disabled) {
-                labelKambing.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-lg p-4 flex flex-col items-center justify-center transition-all relative";
+                labelKambing.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
             }
         }
 
-        // Logika Form Submission
         const form = document.getElementById('qurbanForm');
         const formSection = document.getElementById('formSection');
         const successSection = document.getElementById('successSection');
         const submitBtn = document.getElementById('submitBtn');
 
         form.addEventListener('submit', async function(e) {
-            e.preventDefault(); // Mencegah reload halaman
+            e.preventDefault();
 
-            // Validasi manual: memastikan daging sudah dipilih
             const meatInputEl = document.querySelector('input[name="meatChoice"]:checked');
             if (!meatInputEl) {
-                alert("Mohon pilih jenis daging (Sapi atau Kambing) terlebih dahulu.");
+                alert("Mohon pilih jenis daging terlebih dahulu.");
                 return;
             }
             
-            // Mengambil nilai input
             const nameInput = document.getElementById('name').value;
             const phoneInput = document.getElementById('phone').value;
             const meatInput = meatInputEl.value;
-            
-            // Mengecek status pengkurban & jumlah tiket yang diinginkan
             const isPengkurban = document.getElementById('isPengkurban').checked;
             let ticketCount = isPengkurban ? parseInt(document.getElementById('ticketCount').value) || 1 : 1;
             
-            // Validasi batas wajar jumlah tiket
             if (ticketCount < 1) ticketCount = 1;
             if (ticketCount > 50) {
                 alert("Maksimal pencetakan tiket dalam 1x proses adalah 50 tiket.");
@@ -434,36 +356,31 @@
                 document.getElementById('ticketCount').value = 50;
             }
 
-            // VALIDASI: Cek apakah tiket yang diminta melebihi Sisa Kuota
             if (meatInput === 'sapi' && ticketCount > globalSisaSapi) {
-                alert(`Mohon maaf, sisa kuota Daging Sapi hanya ${globalSisaSapi} tiket. Harap kurangi jumlah tiket Anda.`);
+                alert(`Sisa kuota Daging Sapi hanya ${globalSisaSapi} tiket.`);
                 return;
             }
             if (meatInput === 'kambing' && ticketCount > globalSisaKambing) {
-                alert(`Mohon maaf, sisa kuota Daging Kambing hanya ${globalSisaKambing} tiket. Harap kurangi jumlah tiket Anda.`);
+                alert(`Sisa kuota Daging Kambing hanya ${globalSisaKambing} tiket.`);
                 return;
             }
             
-            // Ubah tombol jadi loading
-            submitBtn.textContent = 'Menyimpan Data ke Database...';
+            submitBtn.textContent = 'Menyimpan Data...';
             submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
             submitBtn.classList.add('bg-emerald-400', 'cursor-not-allowed');
 
             try {
-                // 1. MENGAMBIL JUMLAH TOTAL PENDAFTAR SAAT INI (SEBELUM INSERT) BERDASARKAN JENIS DAGING
+                // 1. Ambil urutan
                 const { count, error: countError } = await supabaseClient
                     .from('registrations')
                     .select('*', { count: 'exact', head: true })
-                    .eq('meat_choice', meatInput); // <-- FILTER DITAMBAHKAN DI SINI
+                    .eq('meat_choice', meatInput);
                 
                 if (countError) throw countError;
 
-                // Tentukan nomor awal tiket berdasarkan jumlah data di database (yang sesuai pilihan daging) + 1
                 let nextUrutan = (count || 0) + 1;
-
-                // 2. MENYUSUN ARRAY DATA & NOMOR TIKET UNTUK DIMASUKKAN
                 const dataToInsert = [];
-                const generatedTickets = []; // Simpan data untuk UI
+                const generatedTickets = [];
 
                 for (let i = 0; i < ticketCount; i++) {
                     let currentUrutan = nextUrutan + i;
@@ -473,40 +390,32 @@
                         name: nameInput, 
                         phone: phoneInput, 
                         meat_choice: meatInput,
-                        ticket_number: ticketCode // <-- MENGIRIM NOMOR URUT KE SUPABASE
+                        ticket_number: ticketCode
                     });
                     
                     generatedTickets.push(ticketCode);
                 }
 
-                // 3. MENGIRIM DATA BANYAK SEKALIGUS KE SUPABASE
+                // 2. Insert ke Database
                 const { error: insertError } = await supabaseClient.from('registrations').insert(dataToInsert);
-
                 if (insertError) throw insertError;
 
-
-                // 4. UPDATE UI TEXT SUKSES
+                // 3. Update UI
                 document.getElementById('successDesc').textContent = ticketCount > 1 
-                    ? `Berikut adalah ${ticketCount} tiket (kupon) Anda. Silakan bagikan atau simpan gambar-gambar di bawah ini.` 
-                    : `Berikut adalah tiket (kupon) Anda. Silakan bagikan atau simpan gambar ini.`;
+                    ? `Berikut adalah ${ticketCount} e-Kupon warga. Silakan bagikan via WA atau cetak.` 
+                    : `Berikut adalah e-Kupon warga. Silakan bagikan via WA atau cetak.`;
 
-                // BUILD HTML BANYAK TIKET
                 const ticketsContainer = document.getElementById('ticketsContainer');
-                ticketsContainer.innerHTML = ''; // bersihkan kontainer
+                ticketsContainer.innerHTML = '';
                 
                 const meatLabel = meatInput === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
                 const meatIcon = meatInput === 'sapi' ? '🐄' : '🐐';
 
-                // Render tiket satu persatu berdasarkan array yang sudah dibuat tadi
                 for(let i=0; i < generatedTickets.length; i++) {
                     const ticketCode = generatedTickets[i];
-
                     const ticketHTML = `
                         <div class="ticket-box bg-white border-2 border-dashed border-emerald-600 rounded-xl max-w-sm mx-auto overflow-hidden shadow-sm text-left relative shrink-0">
-                            <!-- Watermark / BG Icon -->
                             <div class="absolute top-10 right-2 opacity-5 text-9xl z-0">${meatIcon}</div>
-                            
-                            <!-- Header Tiket -->
                             <div class="bg-emerald-700 text-white p-4 flex justify-between items-center relative z-10">
                                 <div class="text-left">
                                     <h4 class="font-bold text-lg md:text-xl tracking-wider">KUPON QURBAN</h4>
@@ -517,18 +426,13 @@
                                     <p class="font-mono font-bold text-lg md:text-xl tracking-widest text-yellow-300 ticket-code-text">${ticketCode}</p>
                                 </div>
                             </div>
-                            
-                            <!-- Body Tiket -->
                             <div class="p-6 relative z-10">
                                 <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Nama Pendaftar</p>
                                 <p class="font-bold text-lg text-gray-800 mb-4 pb-1 break-words leading-relaxed user-name-text">${nameInput}</p>
-                                
-                                <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Pilihan Daging</p>
                                 <div class="flex items-center gap-2 mb-4">
                                     <span class="text-2xl">${meatIcon}</span>
                                     <p class="font-bold text-xl text-emerald-700 uppercase">${meatLabel}</p>
                                 </div>
-
                                 <div class="border-t border-gray-200 pt-4 mt-2">
                                     <p class="text-xs text-gray-500 mb-1">Lokasi Pengambilan:</p>
                                     <p class="text-sm font-semibold text-gray-700">Musholla Miftahul Ullum, Cipadu</p>
@@ -539,105 +443,85 @@
                     ticketsContainer.insertAdjacentHTML('beforeend', ticketHTML);
                 }
 
-                // Menampilkan Section Kupon
                 formSection.classList.add('hidden');
                 successSection.classList.remove('hidden');
-                form.reset(); // Kosongkan form
-                updateRadioUI(); // Reset UI radio button
-                document.getElementById('ticketCountContainer').classList.add('hidden'); // Sembunyikan count container lagi
+                form.reset();
+                updateRadioUI();
+                document.getElementById('ticketCountContainer').classList.add('hidden');
                 
-                // Perbarui sisa kuota untuk pendaftar selanjutnya yang membuka
                 checkQuotas();
 
             } catch (error) {
                 console.error("Error Supabase:", error);
                 alert("Mohon maaf, terjadi kesalahan saat menyimpan data: " + error.message);
             } finally {
-                // Kembalikan tombol ke semula
-                submitBtn.textContent = 'Kirim Pendaftaran';
+                submitBtn.textContent = 'Buat e-Kupon';
                 submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
                 submitBtn.classList.remove('bg-emerald-400', 'cursor-not-allowed');
             }
         });
 
-        // Logika Berbagi (Share) Tiket (Mendukung Banyak Tiket Sekaligus)
+        // ==========================================
+        // LOGIKA SHARE DAN DOWNLOAD TIKET
+        // ==========================================
         async function shareTicket() {
             const ticketElements = document.querySelectorAll('.ticket-box');
             const shareBtn = document.getElementById('shareBtn');
             const originalBtnText = shareBtn.innerHTML;
             
-            // Ubah teks tombol saat memproses
             shareBtn.innerHTML = "Memproses...";
             shareBtn.classList.add('opacity-70', 'cursor-not-allowed');
 
             try {
                 const filesArray = [];
-                
-                // Looping untuk merender dan mengubah semua tiket menjadi file gambar
                 for (let i = 0; i < ticketElements.length; i++) {
                     const canvas = await html2canvas(ticketElements[i], { scale: 2, backgroundColor: "#ffffff" });
                     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                    
                     const codeEl = ticketElements[i].querySelector('.ticket-code-text');
                     const nameEl = ticketElements[i].querySelector('.user-name-text');
-                    
                     const ticketCode = codeEl ? codeEl.textContent : (i+1);
                     const userName = nameEl ? nameEl.textContent.replace(/\s+/g, '_') : 'Anonim';
                     const fileName = `Tiket_${userName}_${ticketCode}.png`;
-                    
                     filesArray.push(new File([blob], fileName, { type: 'image/png' }));
                 }
 
-                // Cek dukungan Web Share API untuk File
                 if (navigator.canShare && navigator.canShare({ files: filesArray })) {
                     try {
                         await navigator.share({
                             title: 'Kupon Qurban 1447 H',
-                            text: `Berikut adalah ${filesArray.length} e-Kupon Qurban untuk pengambilan daging.`,
+                            text: `Berikut adalah ${filesArray.length} e-Kupon Qurban Bapak/Ibu. Mohon disimpan untuk pengambilan daging.`,
                             files: filesArray
                         });
                     } catch (err) {
                         if (err.name !== 'AbortError') {
-                            console.error("Gagal share tiket:", err);
                             alert("Terjadi kesalahan saat mencoba membagikan tiket.");
                         }
                     }
                 } else {
-                    // Fallback jika browser desktop tidak mendukung share banyak gambar
-                    alert("Browser perangkat Anda tidak mendukung fitur berbagi gambar massal secara langsung. Silakan gunakan tombol 'Simpan Tiket' untuk mendownloadnya.");
+                    alert("Browser/HP Anda tidak mendukung kirim gambar massal langsung. Silakan gunakan tombol 'Simpan/Cetak'.");
                 }
-                
-                // Kembalikan tombol
-                shareBtn.innerHTML = originalBtnText;
-                shareBtn.classList.remove('opacity-70', 'cursor-not-allowed');
-                
             } catch (err) {
-                console.error("Gagal memproses tiket:", err);
                 alert("Terjadi kesalahan saat membuat gambar tiket.");
+            } finally {
                 shareBtn.innerHTML = originalBtnText;
                 shareBtn.classList.remove('opacity-70', 'cursor-not-allowed');
             }
         }
 
-        // Logika Download Tiket Beruntun
         async function downloadTicket() {
             const ticketElements = document.querySelectorAll('.ticket-box');
             const downloadBtn = document.getElementById('downloadBtn');
             const originalBtnText = downloadBtn.innerHTML;
             
-            // Ubah teks tombol saat memproses
-            downloadBtn.innerHTML = "Mendownload...";
+            downloadBtn.innerHTML = "Menyimpan...";
             downloadBtn.classList.add('opacity-70', 'cursor-not-allowed');
 
             try {
                 for (let i = 0; i < ticketElements.length; i++) {
-                    // html2canvas menangkap elemen HTML dan menjadikannya canvas
                     const canvas = await html2canvas(ticketElements[i], { scale: 2, backgroundColor: "#ffffff" });
                     const imageURI = canvas.toDataURL("image/png");
-                    
                     const codeEl = ticketElements[i].querySelector('.ticket-code-text');
                     const nameEl = ticketElements[i].querySelector('.user-name-text');
-                    
                     const ticketCode = codeEl ? codeEl.textContent : (i+1);
                     const userName = nameEl ? nameEl.textContent.replace(/\s+/g, '_') : 'Anonim';
 
@@ -645,63 +529,24 @@
                     link.href = imageURI;
                     link.download = `Tiket_${userName}_${ticketCode}.png`;
                     
-                    // Eksekusi klik download
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
                     
-                    // Beri jeda kecil antar download agar browser tidak memblokirnya (anti-spam popup)
                     await new Promise(r => setTimeout(r, 400));
                 }
             } catch (err) {
-                console.error("Gagal mendownload tiket:", err);
-                alert("Terjadi kesalahan saat memproses gambar tiket.");
+                alert("Terjadi kesalahan saat menyimpan gambar tiket.");
             } finally {
-                // Kembalikan tombol
                 downloadBtn.innerHTML = originalBtnText;
                 downloadBtn.classList.remove('opacity-70', 'cursor-not-allowed');
             }
         }
 
-        // Logika Reset Form
         function resetForm() {
             successSection.classList.add('hidden');
             formSection.classList.remove('hidden');
-            document.getElementById('ticketsContainer').innerHTML = ''; // bersihkan memori
-        }
-
-        // Logika FAQ Accordion
-        function toggleFAQ(button) {
-            const content = button.nextElementSibling;
-            const iconDown = button.querySelector('.icon-down');
-            const iconUp = button.querySelector('.icon-up');
-
-            // Menutup semua FAQ lainnya
-            document.querySelectorAll('.faq-content').forEach(el => {
-                if(el !== content) {
-                    el.classList.replace('max-h-48', 'max-h-0');
-                    el.classList.replace('opacity-100', 'opacity-0');
-                    el.classList.remove('py-4');
-                    el.previousElementSibling.querySelector('.icon-down').classList.remove('hidden');
-                    el.previousElementSibling.querySelector('.icon-up').classList.add('hidden');
-                }
-            });
-
-            if (content.classList.contains('max-h-0')) {
-                // Buka
-                content.classList.replace('max-h-0', 'max-h-48');
-                content.classList.replace('opacity-0', 'opacity-100');
-                content.classList.add('py-4');
-                iconDown.classList.add('hidden');
-                iconUp.classList.remove('hidden');
-            } else {
-                // Tutup
-                content.classList.replace('max-h-48', 'max-h-0');
-                content.classList.replace('opacity-100', 'opacity-0');
-                content.classList.remove('py-4');
-                iconDown.classList.remove('hidden');
-                iconUp.classList.add('hidden');
-            }
+            document.getElementById('ticketsContainer').innerHTML = '';
         }
     </script>
 </body>

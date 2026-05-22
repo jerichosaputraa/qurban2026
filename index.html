@@ -70,14 +70,14 @@
                 <img src="logo-musholla.jpg" alt="Watermark" class="w-96 md:w-[30rem] opacity-5 grayscale" onerror="this.style.display='none'">
             </div>
 
-            <!-- 1. HALAMAN DASHBOARD (MENU UTAMA) -->
-            <div id="pageDashboard" class="w-full max-w-5xl hidden relative z-10 mt-4 md:mt-8">
-                <div class="text-center mb-10">
+            <!-- 1. HALAMAN DASHBOARD (MENU UTAMA & TABEL DATA) -->
+            <div id="pageDashboard" class="w-full max-w-5xl hidden relative z-10 mt-4 md:mt-8 pb-12">
+                <div class="text-center mb-8">
                     <h2 class="text-3xl font-bold text-emerald-900 mb-2 font-serif">Selamat Datang, Panitia!</h2>
-                    <p class="text-gray-600 bg-white/80 inline-block px-4 py-1 rounded-full backdrop-blur-sm">Pilih menu di bawah ini untuk memulai tugas Anda.</p>
+                    <p class="text-gray-600 bg-white/80 inline-block px-4 py-1 rounded-full backdrop-blur-sm shadow-sm">Pilih aksi di bawah, atau gulir ke bawah untuk melihat data warga.</p>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                     <!-- Tombol Menu Pendataan -->
                     <div onclick="showPage('register')" class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-200 hover:border-emerald-500 hover:shadow-lg transition-all cursor-pointer group text-center flex flex-col items-center">
                         <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -85,15 +85,6 @@
                         </div>
                         <h3 class="text-lg font-bold text-emerald-900 mb-2">Pendataan Baru</h3>
                         <p class="text-xs text-gray-500 leading-relaxed">Formulir pendaftaran warga dan pencetakan e-kupon qurban baru.</p>
-                    </div>
-
-                    <!-- Tombol Menu List Data -->
-                    <div onclick="showPage('list')" class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-200 hover:border-emerald-500 hover:shadow-lg transition-all cursor-pointer group text-center flex flex-col items-center">
-                        <div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
-                        </div>
-                        <h3 class="text-lg font-bold text-yellow-900 mb-2">Data Warga</h3>
-                        <p class="text-xs text-gray-500 leading-relaxed">Lihat tabel daftar nama warga yang sudah berhasil terdaftar.</p>
                     </div>
 
                     <!-- Tombol Menu Export -->
@@ -105,28 +96,58 @@
                         <p class="text-xs text-gray-500 leading-relaxed">Unduh data pendaftar ke dalam format tabel Excel (.xlsx).</p>
                     </div>
                 </div>
+
+                <!-- Bagian Tabel Data Warga -->
+                <div class="w-full">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-emerald-900 font-serif">Data Warga Terdaftar</h2>
+                            <p class="text-gray-600 text-sm bg-white/80 inline-block px-2 rounded backdrop-blur-sm shadow-sm mt-1">Daftar warga yang telah menerima kupon Qurban.</p>
+                        </div>
+                    </div>
+
+                    <div id="listContainer" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 overflow-x-auto relative min-h-[300px]">
+                        <div id="tableLoading" class="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
+                            <p class="text-emerald-600 font-bold animate-pulse">Memuat data...</p>
+                        </div>
+                        <table class="w-full text-left min-w-[600px]">
+                            <thead>
+                                <tr class="text-gray-500 border-b">
+                                    <th class="pb-3 px-2">Nama Lengkap</th>
+                                    <th class="pb-3 px-2">Nomor WhatsApp</th>
+                                    <th class="pb-3 px-2 text-center">Pilihan</th>
+                                    <th class="pb-3 px-2 text-center">Tiket</th>
+                                    <th class="pb-3 px-2 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <!-- Data dimuat lewat JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <!-- 2. HALAMAN PENDATAAN WARGA (FORM BESAR) -->
             <div id="pageRegister" class="w-full max-w-2xl hidden relative z-10">
-                <div class="flex items-center gap-4 mb-6">
-                    <button onclick="showPage('dashboard')" class="bg-white p-2 rounded-full shadow-sm text-emerald-700 hover:bg-emerald-50">
+                <div class="flex items-center gap-4 mb-6 mt-4">
+                    <button onclick="showPage('dashboard')" class="bg-white p-2 rounded-full shadow-sm text-emerald-700 hover:bg-emerald-50 border border-emerald-100">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                     </button>
                     <div>
                         <h2 class="text-2xl font-bold text-emerald-900 font-serif">Formulir Pendataan Warga</h2>
-                        <p class="text-gray-600 text-sm bg-white/80 inline-block px-2 rounded backdrop-blur-sm">Isi data untuk membuat e-Kupon.</p>
+                        <p class="text-gray-600 text-sm bg-white/80 inline-block px-2 rounded backdrop-blur-sm shadow-sm mt-1">Isi data untuk membuat e-Kupon.</p>
                     </div>
                 </div>
 
                 <div id="formSection" class="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-gray-200">
                     <!-- Info Kuota -->
                     <div class="flex gap-4 mb-6 pb-6 border-b border-gray-100">
-                        <div class="flex-1 bg-emerald-50 px-4 py-3 rounded-xl border border-emerald-100 text-center">
+                        <div class="flex-1 bg-emerald-50 px-4 py-3 rounded-xl border border-emerald-100 text-center shadow-inner">
                             <p class="text-xs text-emerald-600 font-bold uppercase mb-1">Sisa Kuota Sapi</p>
                             <p id="infoSisaSapi" class="text-2xl font-bold text-emerald-800">...</p>
                         </div>
-                        <div class="flex-1 bg-emerald-50 px-4 py-3 rounded-xl border border-emerald-100 text-center">
+                        <div class="flex-1 bg-emerald-50 px-4 py-3 rounded-xl border border-emerald-100 text-center shadow-inner">
                             <p class="text-xs text-emerald-600 font-bold uppercase mb-1">Sisa Kuota Kambing</p>
                             <p id="infoSisaKambing" class="text-2xl font-bold text-emerald-800">...</p>
                         </div>
@@ -147,15 +168,15 @@
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 mb-3">Pilihan Daging</label>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative" id="labelSapi">
+                                    <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative" id="labelSapi">
                                         <input type="radio" name="meatChoice" value="sapi" id="radioSapi" class="sr-only" onchange="updateRadioUI()">
-                                        <span class="text-4xl mb-2">🐄</span>
+                                        <span class="text-4xl mb-2 drop-shadow-sm">🐄</span>
                                         <span class="font-bold text-gray-800">Daging Sapi</span>
                                     </label>
                                     
-                                    <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative" id="labelKambing">
+                                    <label class="cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative" id="labelKambing">
                                         <input type="radio" name="meatChoice" value="kambing" id="radioKambing" class="sr-only" onchange="updateRadioUI()">
-                                        <span class="text-4xl mb-2">🐐</span>
+                                        <span class="text-4xl mb-2 drop-shadow-sm">🐐</span>
                                         <span class="font-bold text-gray-800">Daging Kambing</span>
                                     </label>
                                 </div>
@@ -164,7 +185,7 @@
                             <!-- Area Opsi Pengkurban -->
                             <div class="mt-2 p-5 bg-gray-50 rounded-xl border border-gray-200">
                                 <label class="flex items-start gap-3 cursor-pointer">
-                                    <input type="checkbox" id="isPengkurban" class="mt-1 w-5 h-5 text-emerald-600 rounded border-emerald-300 focus:ring-emerald-500 transition-all" onchange="togglePengkurban()">
+                                    <input type="checkbox" id="isPengkurban" class="mt-1 w-5 h-5 text-emerald-600 rounded border-emerald-300 focus:ring-emerald-500 transition-all shadow-sm" onchange="togglePengkurban()">
                                     <div>
                                         <span class="font-bold text-gray-800 block">Warga ini adalah Pengkurban (Shohibul Qurban)</span>
                                         <span class="text-xs text-gray-500 block mt-0.5 leading-relaxed">Centang opsi ini untuk membuat banyak tiket (Batch) bagi pengkurban.</span>
@@ -216,43 +237,10 @@
                 </div>
             </div>
 
-            <!-- 3. HALAMAN DATA WARGA (TABEL) -->
-            <div id="pageList" class="w-full max-w-4xl hidden relative z-10">
-                <div class="flex items-center gap-4 mb-6">
-                    <button onclick="showPage('dashboard')" class="bg-white p-2 rounded-full shadow-sm text-emerald-700 hover:bg-emerald-50">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-                    </button>
-                    <div>
-                        <h2 class="text-2xl font-bold text-emerald-900 font-serif">Daftar Penerima Qurban</h2>
-                        <p class="text-gray-600 text-sm bg-white/80 inline-block px-2 rounded backdrop-blur-sm">Rekapitulasi warga yang telah didata.</p>
-                    </div>
-                </div>
-
-                <div id="listContainer" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 overflow-x-auto relative min-h-[300px]">
-                    <div id="tableLoading" class="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
-                        <p class="text-emerald-600 font-bold animate-pulse">Memuat data...</p>
-                    </div>
-                    <table class="w-full text-left min-w-[600px]">
-                        <thead>
-                            <tr class="text-gray-500 border-b">
-                                <th class="pb-3 px-2">Nama</th>
-                                <th class="pb-3 px-2">WhatsApp</th>
-                                <th class="pb-3 px-2 text-center">Pilihan</th>
-                                <th class="pb-3 px-2 text-center">Tiket</th>
-                                <th class="pb-3 px-2 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            <!-- Data dimuat lewat JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 4. HALAMAN EXPORT DATA -->
-            <div id="pageExport" class="w-full max-w-xl hidden relative z-10">
+            <!-- 3. HALAMAN EXPORT DATA -->
+            <div id="pageExport" class="w-full max-w-xl hidden relative z-10 mt-4">
                 <div class="flex items-center gap-4 mb-6 justify-center">
-                    <button onclick="showPage('dashboard')" class="bg-white p-2 rounded-full shadow-sm text-blue-700 hover:bg-blue-50 absolute left-4 md:left-0 top-0">
+                    <button onclick="showPage('dashboard')" class="bg-white p-2 rounded-full shadow-sm text-blue-700 hover:bg-blue-50 absolute left-4 md:left-0 top-0 border border-blue-100">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                     </button>
                     <div>
@@ -272,20 +260,21 @@
                             <p>File akan diunduh dalam format <strong>.xlsx</strong> asli. Lebar kolom sudah otomatis disesuaikan, dan nomor WhatsApp / Tiket dijamin tidak akan kehilangan angka 0 di depannya.</p>
                         </div>
                     </div>
-                    <button onclick="downloadExcelData()" id="btnDoExport" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-colors shadow-md">
+                    <button onclick="downloadExcelData()" id="btnDoExport" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-colors shadow-md flex justify-center items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
                         Download File Excel (.xlsx)
                     </button>
                 </div>
             </div>
 
-            <!-- MODAL PREVIEW TIKET (Untuk Halaman Tabel) -->
+            <!-- MODAL PREVIEW TIKET (Untuk Halaman Tabel Dashboard) -->
             <div id="ticketModal" class="fixed inset-0 bg-black/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm">
                 <div class="bg-white rounded-2xl p-6 max-w-sm w-full relative">
-                    <button onclick="closeTicketModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    <button onclick="closeTicketModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full p-1 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                     
-                    <div class="text-center mb-4">
+                    <div class="text-center mb-4 mt-2">
                         <h3 class="text-lg font-bold text-emerald-900">Preview Kupon Warga</h3>
                     </div>
 
@@ -307,7 +296,7 @@
                             <p class="font-bold text-base text-gray-800 mb-3 break-words" id="modalTicketNameRender">-</p>
                             <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Pilihan Daging</p>
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="text-xl" id="modalTicketIconRender">🥩</span>
+                                <span class="text-xl drop-shadow-sm" id="modalTicketIconRender">🥩</span>
                                 <p class="font-bold text-sm text-emerald-700 uppercase" id="modalTicketMeatRender">-</p>
                             </div>
                             <div class="border-t border-gray-200 pt-3 mt-1">
@@ -352,7 +341,6 @@
 
             document.getElementById('pageDashboard').classList.add('hidden');
             document.getElementById('pageRegister').classList.add('hidden');
-            document.getElementById('pageList').classList.add('hidden');
             document.getElementById('pageExport').classList.add('hidden');
 
             if (page === 'login') {
@@ -360,12 +348,10 @@
                 document.getElementById('mainAppSection').classList.add('hidden');
             } else if (page === 'dashboard') {
                 document.getElementById('pageDashboard').classList.remove('hidden');
+                loadData(); // Load tabel data warga setiap kali ke dashboard
             } else if (page === 'register') {
                 document.getElementById('pageRegister').classList.remove('hidden');
                 checkQuotas();
-            } else if (page === 'list') {
-                document.getElementById('pageList').classList.remove('hidden');
-                loadData();
             } else if (page === 'export') {
                 document.getElementById('pageExport').classList.remove('hidden');
             }
@@ -412,7 +398,7 @@
                     radioSapi.disabled = true;
                     radioSapi.checked = false;
                     labelSapi.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-100');
-                    labelSapi.classList.remove('cursor-pointer', 'hover:border-emerald-300', 'hover:bg-gray-50');
+                    labelSapi.classList.remove('cursor-pointer', 'hover:border-emerald-300', 'hover:bg-emerald-50');
                 } else {
                     radioSapi.disabled = false;
                 }
@@ -421,7 +407,7 @@
                     radioKambing.disabled = true;
                     radioKambing.checked = false;
                     labelKambing.classList.add('opacity-50', 'cursor-not-allowed', 'bg-gray-100');
-                    labelKambing.classList.remove('cursor-pointer', 'hover:border-emerald-300', 'hover:bg-gray-50');
+                    labelKambing.classList.remove('cursor-pointer', 'hover:border-emerald-300', 'hover:bg-emerald-50');
                 } else {
                     radioKambing.disabled = false;
                 }
@@ -466,13 +452,13 @@
             const labelSapi = document.getElementById('labelSapi');
             const labelKambing = document.getElementById('labelKambing');
 
-            if (labelSapi && !document.getElementById('radioSapi').disabled) labelSapi.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
-            if (labelKambing && !document.getElementById('radioKambing').disabled) labelKambing.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
+            if (labelSapi && !document.getElementById('radioSapi').disabled) labelSapi.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
+            if (labelKambing && !document.getElementById('radioKambing').disabled) labelKambing.className = "cursor-pointer border border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
 
             if (sapiChecked && !document.getElementById('radioSapi').disabled) {
-                labelSapi.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
+                labelSapi.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative shadow-sm";
             } else if (kambingChecked && !document.getElementById('radioKambing').disabled) {
-                labelKambing.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative";
+                labelKambing.className = "cursor-pointer border border-emerald-600 bg-emerald-50 ring-2 ring-emerald-500/20 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative shadow-sm";
             }
         }
 
@@ -570,7 +556,7 @@
                                 <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Nama Pendaftar</p>
                                 <p class="font-bold text-base text-gray-800 mb-3 break-words user-name-text">${nameInput}</p>
                                 <div class="flex items-center gap-2 mb-3">
-                                    <span class="text-xl">${meatIcon}</span>
+                                    <span class="text-xl drop-shadow-sm">${meatIcon}</span>
                                     <p class="font-bold text-sm text-emerald-700 uppercase">${meatLabel}</p>
                                 </div>
                                 <div class="border-t border-gray-200 pt-3 mt-1">
@@ -684,13 +670,13 @@
                 }
 
                 tbody.innerHTML = data.map(r => `
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="py-3 px-2 font-medium text-sm truncate max-w-[150px]" title="${r.name}">${r.name}</td>
+                    <tr class="border-b hover:bg-emerald-50 transition-colors">
+                        <td class="py-3 px-2 font-semibold text-sm truncate max-w-[150px] text-gray-800" title="${r.name}">${r.name}</td>
                         <td class="py-3 px-2 text-xs font-mono text-gray-600">${r.phone}</td>
                         <td class="py-3 px-2 text-center text-xl" title="${r.meat_choice === 'sapi' ? 'Sapi' : 'Kambing'}">${r.meat_choice === 'sapi' ? '🐄' : '🐐'}</td>
                         <td class="py-3 px-2 text-center font-mono font-bold text-emerald-700">${r.ticket_number}</td>
                         <td class="py-3 px-2 text-center">
-                            <button onclick='showTicketModal(${JSON.stringify(r)})' class="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 py-1 px-2 rounded-md transition-colors font-medium border border-emerald-200 shadow-sm whitespace-nowrap">
+                            <button onclick='showTicketModal(${JSON.stringify(r)})' class="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 py-1.5 px-3 rounded-md transition-colors font-semibold border border-emerald-200 shadow-sm whitespace-nowrap">
                                 Lihat Kupon
                             </button>
                         </td>
@@ -817,7 +803,10 @@
             } catch (err) {
                 alert("Gagal: " + err.message);
             } finally {
-                btn.textContent = "Download File Excel (.xlsx)";
+                btn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
+                    Download File Excel (.xlsx)
+                `;
             }
         }
     </script>

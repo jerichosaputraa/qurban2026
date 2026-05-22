@@ -332,9 +332,9 @@
         let activeTicketData = null; // Menyimpan data tiket untuk di-download dari Modal
 
         // ==========================================
-        // MANAJEMEN HALAMAN
+        // MANAJEMEN HALAMAN & HISTORY API (TOMBOL BACK HP)
         // ==========================================
-        function showPage(page) {
+        function showPage(page, pushToHistory = true) {
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('mainAppSection').classList.remove('hidden');
             document.getElementById('mainAppSection').classList.add('flex');
@@ -346,6 +346,7 @@
             if (page === 'login') {
                 document.getElementById('loginSection').classList.remove('hidden');
                 document.getElementById('mainAppSection').classList.add('hidden');
+                document.getElementById('mainAppSection').classList.remove('flex');
             } else if (page === 'dashboard') {
                 document.getElementById('pageDashboard').classList.remove('hidden');
                 loadData(); // Load tabel data warga setiap kali ke dashboard
@@ -355,7 +356,33 @@
             } else if (page === 'export') {
                 document.getElementById('pageExport').classList.remove('hidden');
             }
+
+            // Integrasi History API agar tombol Back HP berfungsi
+            if (pushToHistory) {
+                history.pushState({ page: page }, '', '#' + page);
+            }
         }
+
+        // Setup awal saat web dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            history.replaceState({ page: 'login' }, '', '#login');
+        });
+
+        // Deteksi jika tombol "Back" atau usap mundur pada layar HP dilakukan
+        window.addEventListener('popstate', (e) => {
+            // Tutup modal jika sedang terbuka
+            if (!document.getElementById('ticketModal').classList.contains('hidden')) {
+                closeTicketModal();
+                // Sengaja return agar tidak merubah halaman, cukup tutup modal saja
+                return; 
+            }
+
+            if (e.state && e.state.page) {
+                showPage(e.state.page, false); // false = jangan push history lagi agar tidak infinite loop
+            } else {
+                showPage('login', false);
+            }
+        });
 
         function handleLogin(e) {
             e.preventDefault();
@@ -702,6 +729,9 @@
 
             document.getElementById('ticketModal').classList.remove('hidden');
             document.getElementById('ticketModal').classList.add('flex');
+            
+            // Push history khusus untuk Modal agar saat back di HP modal tertutup
+            history.pushState({ page: 'modal' }, '', '#kupon');
         }
 
         function closeTicketModal() {

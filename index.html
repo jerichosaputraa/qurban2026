@@ -217,7 +217,7 @@
 
                     <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 text-sm text-blue-800 flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5 text-blue-600"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-                        <p>Format nomor WhatsApp otomatis disesuaikan (<code>="08..."</code>) agar angka 0 tidak hilang saat dibuka menggunakan Microsoft Excel.</p>
+                        <p>Format nomor WhatsApp dan Nomor Tiket otomatis disesuaikan (<code>="08..."</code> / <code>="001"</code>) agar angka 0 di depan tidak terhapus oleh Excel.</p>
                     </div>
 
                     <button onclick="downloadCSVData()" id="btnDoExport" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2">
@@ -349,10 +349,12 @@
                 
                 data.forEach(row => {
                     const name = `"${row.name || '-'}"`;
-                    // FORMAT EXCEL FORCE TEXT: ="0812xxxx" (mencegah excel menghapus 0)
+                    // FORMAT EXCEL FORCE TEXT UNTUK WHATSAPP: ="0812xxxx" (mencegah excel menghapus 0)
                     const phone = `="` + (row.phone || '-') + `"`;
                     const meat = row.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
-                    const ticket = row.ticket_number || '-';
+                    
+                    // FORMAT EXCEL FORCE TEXT UNTUK TIKET: ="001" (mencegah excel menghapus 0)
+                    const ticket = row.ticket_number ? `="` + row.ticket_number + `"` : '-';
                     
                     csvContent += `${name},${phone},${meat},${ticket}\n`;
                 });

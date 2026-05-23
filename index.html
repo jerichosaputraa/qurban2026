@@ -1048,21 +1048,38 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
 
             try {
                 const filesArray = [];
+                const codes = [];
+                let pendaftarName = '';
+                let isSapi = false;
+                
                 for (let i = 0; i < ticketElements.length; i++) {
                     const canvas = await html2canvas(ticketElements[i], { scale: 2, backgroundColor: "#ffffff" });
                     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                     const code = ticketElements[i].querySelector('.ticket-code-text').textContent;
-                    const name = ticketElements[i].querySelector('.user-name-text').textContent.replace(/\s+/g, '_');
-                    filesArray.push(new File([blob], `Tiket_${name}_${code}.png`, { type: 'image/png' }));
+                    const name = ticketElements[i].querySelector('.user-name-text').textContent;
+                    
+                    if (i === 0) {
+                        pendaftarName = name;
+                        isSapi = ticketElements[i].innerHTML.includes('DAGING SAPI');
+                    }
+                    codes.push(code);
+                    
+                    const safeName = name.replace(/\s+/g, '_');
+                    filesArray.push(new File([blob], `Tiket_${safeName}_${code}.png`, { type: 'image/png' }));
                 }
 
+                const meatLabel = isSapi ? 'Daging Sapi' : 'Daging Kambing';
+                const joinedCodes = codes.join(', ');
+                
+                const message = `Assalamu'alaikum Bapak/Ibu *${pendaftarName}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${joinedCodes}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
+
                 if (navigator.canShare && navigator.canShare({ files: filesArray })) {
-                    await navigator.share({ title: 'Kupon Qurban', text: `Berikut e-Kupon Qurban Anda.`, files: filesArray });
+                    await navigator.share({ title: 'Kupon Qurban', text: message, files: filesArray });
                 } else {
                     alert("Perangkat tidak mendukung kirim gambar massal langsung. Gunakan tombol Simpan/Cetak.");
                 }
             } catch (err) {
-                alert("Terjadi kesalahan.");
+                if(err.name !== 'AbortError') console.error(err);
             } finally {
                 btn.innerHTML = originalTxt;
                 btn.disabled = false;

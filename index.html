@@ -119,7 +119,7 @@
                         <p class="text-sm font-medium text-gray-500 leading-relaxed">Formulir pendaftaran warga dan pencetakan e-kupon qurban baru.</p>
                     </div>
 
-                    <!-- Tombol Menu Statistik (BARU) -->
+                    <!-- Tombol Menu Statistik -->
                     <div onclick="showPage('stats')" class="bg-white p-6 rounded-2xl shadow-sm border border-purple-200 hover:border-purple-500 hover:shadow-lg transition-all cursor-pointer group text-center flex flex-col items-center">
                         <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
@@ -988,6 +988,39 @@
             renderTable(filteredData);
         }
 
+        // ==========================================
+        // FITUR KIRIM PESAN WA OTOMATIS
+        // ==========================================
+        function sendWhatsAppMessage(dataStr) {
+            try {
+                // Parsing data kembali menjadi JSON object
+                const data = JSON.parse(dataStr.replace(/&#39;/g, "'"));
+                
+                if (!data.phone) {
+                    alert("Nomor WhatsApp tidak tersedia untuk warga ini.");
+                    return;
+                }
+                
+                // Format nomor menjadi internasional (+62) jika berawalan 0
+                let formattedPhone = data.phone.replace(/\D/g,''); 
+                if (formattedPhone.startsWith('0')) {
+                    formattedPhone = '62' + formattedPhone.substring(1);
+                }
+                
+                const meatLabel = data.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
+                
+                // Template Pesan WA 
+                const message = `Assalamu'alaikum Bapak/Ibu *${data.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${data.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
+                
+                // Buka tab WA
+                const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+                window.open(waUrl, '_blank');
+            } catch (err) {
+                console.error("Gagal mengirim WA:", err);
+                alert("Terjadi kesalahan saat memproses data kontak.");
+            }
+        }
+
         function renderTable(dataToRender) {
             const tbody = document.getElementById('tableBody');
             if(!tbody) return;
@@ -1004,9 +1037,15 @@
                     <td class="py-3 px-2 text-center text-xl" title="${r.meat_choice === 'sapi' ? 'Sapi' : 'Kambing'}">${r.meat_choice === 'sapi' ? '🐄' : '🐐'}</td>
                     <td class="py-3 px-2 text-center font-mono font-bold text-emerald-700">${r.ticket_number}</td>
                     <td class="py-3 px-2 text-center">
-                        <button onclick='showTicketModal(${JSON.stringify(r).replace(/'/g, "&#39;")})' class="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 py-1.5 px-3 rounded-md transition-colors font-bold border border-emerald-200 shadow-sm whitespace-nowrap">
-                            Lihat Kupon
-                        </button>
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick='showTicketModal(${JSON.stringify(r).replace(/'/g, "&#39;")})' class="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 py-1.5 px-3 rounded-md transition-colors font-bold border border-emerald-200 shadow-sm whitespace-nowrap">
+                                Lihat Kupon
+                            </button>
+                            <button onclick='sendWhatsAppMessage(\`${JSON.stringify(r).replace(/'/g, "&#39;")}\`)' class="text-xs bg-green-500 hover:bg-green-600 text-white py-1.5 px-3 rounded-md transition-colors font-bold shadow-sm whitespace-nowrap flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                WA
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `).join('');

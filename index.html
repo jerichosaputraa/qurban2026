@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Panitia Qurban RT 06</title>
     
+    <!-- MENGHUBUNGKAN GOOGLE FONTS (MONTSERRAT) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&display=swap" rel="stylesheet">
@@ -14,6 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
+    <!-- KONFIGURASI TAILWIND UNTUK MENGGUNAKAN MONTSERRAT -->
     <script>
         tailwind.config = {
             theme: {
@@ -40,16 +42,20 @@
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col">
 
+    <!-- Notifikasi Realtime (Polling) -->
     <div id="notificationBanner" class="hidden fixed top-0 w-full bg-emerald-600 text-white py-2 z-[9999] shadow-lg overflow-hidden whitespace-nowrap">
         <div id="marqueeText" class="animate-marquee font-bold text-sm px-4 text-yellow-300 tracking-wide">
-            </div>
+            <!-- Teks notifikasi akan diisi oleh JS -->
+        </div>
     </div>
 
+    <!-- Section Login -->
     <div id="loginSection" class="flex-1 flex flex-col justify-center items-center px-4 py-12 bg-emerald-800 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
         
         <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md relative z-10">
             <div class="text-center mb-8">
+                <!-- LOGO MUSHOLLA LOGIN -->
                 <img src="logo-musholla.jpg" alt="Logo Musholla Miftahul Ulum" class="w-32 h-auto mx-auto mb-4 object-contain drop-shadow-sm" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=Logo+Musholla';">
                 
                 <h2 class="text-2xl font-black text-emerald-900 tracking-tight">Panel Panitia Qurban</h2>
@@ -68,10 +74,12 @@
         </div>
     </div>
 
+    <!-- Section Utama -->
     <div id="mainAppSection" class="hidden flex-1 flex-col">
         <header class="bg-emerald-800 text-white p-4 shadow-md sticky top-0 z-50">
             <div class="max-w-6xl mx-auto flex justify-between items-center">
                 <div class="flex items-center gap-3 cursor-pointer" onclick="showPage('dashboard')">
+                    <!-- LOGO MUSHOLLA HEADER -->
                     <img src="logo-musholla.jpg" alt="Logo" class="w-10 h-10 object-contain rounded-full bg-white p-0.5 shadow-sm" onerror="this.style.display='none'">
                     
                     <h1 class="font-extrabold tracking-tight text-lg hidden sm:block">Aplikasi Pendataan Qurban</h1>
@@ -89,42 +97,57 @@
 
         <main class="flex-1 p-4 flex flex-col items-center relative overflow-hidden">
             
+            <!-- WATERMARK LOGO DI TENGAH HALAMAN -->
             <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
                 <img src="logo-musholla.jpg" alt="Watermark" class="w-96 md:w-[30rem] opacity-5 grayscale" onerror="this.style.display='none'">
             </div>
 
+            <!-- 1. HALAMAN DASHBOARD (MENU UTAMA & TABEL DATA) -->
             <div id="pageDashboard" class="w-full max-w-5xl hidden relative z-10 mt-4 md:mt-8 pb-12">
                 <div class="text-center mb-8">
                     <h2 class="text-3xl md:text-4xl font-black text-emerald-900 mb-3 tracking-tight">Selamat Datang, Panitia!</h2>
                     <p class="text-gray-600 bg-white/80 inline-block px-4 py-1.5 rounded-full backdrop-blur-sm shadow-sm font-medium">Pilih aksi di bawah, atau gulir ke bawah untuk melihat data warga.</p>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <!-- Tombol Menu Pendataan -->
                     <div onclick="showPage('register')" class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-200 hover:border-emerald-500 hover:shadow-lg transition-all cursor-pointer group text-center flex flex-col items-center">
                         <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
                         </div>
-                        <h3 class="text-xl font-extrabold text-emerald-900 mb-2">Pendataan Baru</h3>
-                        <p class="text-sm font-medium text-gray-500 leading-relaxed">Formulir pendaftaran warga dan pencetakan e-kupon qurban baru.</p>
+                        <h3 class="text-lg font-extrabold text-emerald-900 mb-2">Pendataan Baru</h3>
+                        <p class="text-xs font-medium text-gray-500 leading-relaxed">Formulir pendaftaran dan cetak e-kupon baru.</p>
                     </div>
 
+                    <!-- Tombol Menu Statistik -->
                     <div onclick="showPage('stats')" class="bg-white p-6 rounded-2xl shadow-sm border border-purple-200 hover:border-purple-500 hover:shadow-lg transition-all cursor-pointer group text-center flex flex-col items-center">
                         <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                         </div>
-                        <h3 class="text-xl font-extrabold text-purple-900 mb-2">Statistik Harian</h3>
-                        <p class="text-sm font-medium text-gray-500 leading-relaxed">Pantau ringkasan jumlah pendaftar dan sisa kuota saat ini.</p>
+                        <h3 class="text-lg font-extrabold text-purple-900 mb-2">Statistik Harian</h3>
+                        <p class="text-xs font-medium text-gray-500 leading-relaxed">Pantau ringkasan pendaftar & sisa kuota.</p>
+                    </div>
+                    
+                    <!-- Tombol Menu Broadcast WA -->
+                    <div onclick="showPage('broadcast')" class="bg-white p-6 rounded-2xl shadow-sm border border-orange-200 hover:border-orange-500 hover:shadow-lg transition-all cursor-pointer group text-center flex flex-col items-center">
+                        <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>
+                        </div>
+                        <h3 class="text-lg font-extrabold text-orange-900 mb-2">Broadcast WA</h3>
+                        <p class="text-xs font-medium text-gray-500 leading-relaxed">Kirim pengumuman massal secara aman.</p>
                     </div>
 
+                    <!-- Tombol Menu Export -->
                     <div onclick="showPage('export')" class="bg-white p-6 rounded-2xl shadow-sm border border-blue-200 hover:border-blue-500 hover:shadow-lg transition-all cursor-pointer group text-center flex flex-col items-center">
                         <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
                         </div>
-                        <h3 class="text-xl font-extrabold text-blue-900 mb-2">Export Data</h3>
-                        <p class="text-sm font-medium text-gray-500 leading-relaxed">Unduh data pendaftar ke dalam format tabel Excel (.xlsx).</p>
+                        <h3 class="text-lg font-extrabold text-blue-900 mb-2">Export Data</h3>
+                        <p class="text-xs font-medium text-gray-500 leading-relaxed">Unduh data pendaftar ke tabel Excel (.xlsx).</p>
                     </div>
                 </div>
 
+                <!-- Bagian Tabel Data Warga -->
                 <div class="w-full">
                     <div class="flex items-center gap-4 mb-4">
                         <div>
@@ -133,6 +156,7 @@
                         </div>
                     </div>
 
+                    <!-- FITUR PENCARIAN & FILTER -->
                     <div class="flex flex-col md:flex-row gap-3 mb-4">
                         <div class="flex-1 relative">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -167,12 +191,14 @@
                                 </tr>
                             </thead>
                             <tbody id="tableBody">
-                                </tbody>
+                                <!-- Data dimuat lewat JS -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
+            <!-- 2. HALAMAN PENDATAAN WARGA (FORM BESAR) -->
             <div id="pageRegister" class="w-full max-w-2xl hidden relative z-10">
                 <div class="flex items-center gap-4 mb-6 mt-4">
                     <button onclick="showPage('dashboard')" class="bg-white p-2 rounded-full shadow-sm text-emerald-700 hover:bg-emerald-50 border border-emerald-100">
@@ -185,6 +211,7 @@
                 </div>
 
                 <div id="formSection" class="bg-white rounded-3xl shadow-sm p-6 sm:p-8 border border-gray-200">
+                    <!-- Info Kuota -->
                     <div class="flex gap-4 mb-6 pb-6 border-b border-gray-100">
                         <div class="flex-1 bg-emerald-50 px-4 py-3 rounded-2xl border border-emerald-100 text-center shadow-inner">
                             <p class="text-xs text-emerald-600 font-bold uppercase mb-1 tracking-widest">Sisa Kuota Sapi</p>
@@ -208,6 +235,7 @@
                                 <div class="flex gap-2">
                                     <input type="tel" id="phone" required class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all bg-gray-50 font-medium" placeholder="0812xxxxxxxx">
                                     
+                                    <!-- TOMBOL PILIH KONTAK DARI HP -->
                                     <button type="button" onclick="pickContactFromDevice()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-4 py-3 rounded-xl border border-emerald-200 shadow-sm transition-colors flex justify-center items-center" title="Pilih dari Buku Kontak HP">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 18a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2"/><rect width="18" height="18" x="3" y="4" rx="2"/><circle cx="12" cy="10" r="2"/><line x1="8" x2="8" y1="2" y2="4"/><line x1="16" x2="16" y1="2" y2="4"/></svg>
                                     </button>
@@ -231,6 +259,7 @@
                                 </div>
                             </div>
 
+                            <!-- Area Opsi Pengkurban -->
                             <div class="mt-2 p-5 bg-gray-50 rounded-2xl border border-gray-200">
                                 <label class="flex items-start gap-3 cursor-pointer">
                                     <input type="checkbox" id="isPengkurban" class="mt-1 w-5 h-5 text-emerald-600 rounded border-emerald-300 focus:ring-emerald-500 transition-all shadow-sm" onchange="togglePengkurban()">
@@ -256,6 +285,7 @@
                     </form>
                 </div>
 
+                <!-- Area Sukses (Inline di halaman register) -->
                 <div id="successSection" class="hidden bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-emerald-200 text-center mt-6">
                     <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600"><polyline points="20 6 9 17 4 12"/></svg>
@@ -263,8 +293,10 @@
                     <h3 class="text-2xl font-black text-emerald-900 mb-2">Pembuatan Kupon Berhasil!</h3>
                     <p id="successDesc" class="text-gray-600 font-medium mb-6 text-sm">Berikut adalah e-Kupon warga. Silakan bagikan via WA atau cetak.</p>
                     
+                    <!-- Container Tiket -->
                     <div id="ticketsContainer" class="custom-scrollbar max-h-[50vh] overflow-y-auto px-2 pb-4 mb-6 space-y-6">
-                        </div>
+                        <!-- Tiket di-inject via JS -->
+                    </div>
 
                     <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 border-t border-gray-100 pt-6 mt-4">
                         <button onclick="shareBatchTicket()" id="shareBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
@@ -282,6 +314,7 @@
                 </div>
             </div>
 
+            <!-- 3. HALAMAN EXPORT DATA -->
             <div id="pageExport" class="w-full max-w-xl hidden relative z-10 mt-4">
                 <div class="flex items-center gap-4 mb-6 justify-center">
                     <button onclick="showPage('dashboard')" class="bg-white p-2 rounded-full shadow-sm text-blue-700 hover:bg-blue-50 absolute left-4 md:left-0 top-0 border border-blue-100">
@@ -311,6 +344,7 @@
                 </div>
             </div>
             
+            <!-- 4. HALAMAN STATISTIK HARIAN -->
             <div id="pageStats" class="w-full max-w-4xl hidden relative z-10 mt-4">
                 <div class="flex items-center gap-4 mb-6 justify-center md:justify-start relative">
                     <button onclick="showPage('dashboard')" class="bg-white p-2 rounded-full shadow-sm text-purple-700 hover:bg-purple-50 absolute left-4 md:left-0 top-0 border border-purple-100 z-20">
@@ -322,11 +356,13 @@
                 </div>
 
                 <div class="relative bg-white rounded-3xl shadow-sm p-6 sm:p-8 border border-gray-200 mt-8">
+                    <!-- Loading State Khusus Statistik -->
                     <div id="statsLoading" class="absolute inset-0 bg-white/80 flex items-center justify-center z-10 rounded-3xl hidden">
                         <p class="text-purple-600 font-extrabold animate-pulse">Memuat ringkasan data...</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Total Keseluruhan -->
                         <div class="bg-purple-50 p-6 rounded-2xl border border-purple-100 text-center flex flex-col justify-center">
                             <div class="w-12 h-12 bg-purple-200 text-purple-700 rounded-full flex items-center justify-center mx-auto mb-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -336,6 +372,7 @@
                             <p class="text-xs font-semibold text-purple-500 mt-2">Semua Jenis Daging</p>
                         </div>
                         
+                        <!-- Sapi -->
                         <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 text-center flex flex-col justify-center">
                             <div class="text-4xl mb-2 drop-shadow-sm">🐄</div>
                             <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1">Pendaftar Sapi</p>
@@ -345,6 +382,7 @@
                             </div>
                         </div>
                         
+                        <!-- Kambing -->
                         <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100 text-center flex flex-col justify-center">
                             <div class="text-4xl mb-2 drop-shadow-sm">🐐</div>
                             <p class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1">Pendaftar Kambing</p>
@@ -364,6 +402,92 @@
                 </div>
             </div>
 
+            <!-- 5. HALAMAN BROADCAST WA TERBARU -->
+            <div id="pageBroadcast" class="w-full max-w-4xl hidden relative z-10 mt-4">
+                <div class="flex items-center gap-4 mb-6 justify-center md:justify-start relative">
+                    <button onclick="showPage('dashboard')" class="bg-white p-2 rounded-full shadow-sm text-orange-700 hover:bg-orange-50 absolute left-4 md:left-0 top-0 border border-orange-100 z-20">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="w-full text-center">
+                        <h2 class="text-2xl md:text-3xl font-black text-orange-900 tracking-tight">Kirim Pesan WA Sekaligus</h2>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm p-6 sm:p-8 border border-gray-200 mt-8">
+                    
+                    <div class="mb-8 text-center bg-orange-50 p-4 rounded-xl border border-orange-100">
+                        <p class="text-sm text-gray-700 font-medium">WhatsApp memblokir pengiriman otomatis dari website untuk mencegah <i>spam</i>. <br/> Namun Anda tetap bisa kirim ke semua warga dengan 1 kali klik menggunakan fitur resmi <strong>Daftar Siaran (Broadcast List)</strong> di aplikasi WA Anda!</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        
+                        <!-- Pilihan Filter -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">1. Pilih Penerima Pesan</label>
+                            <select id="broadcastFilter" onchange="renderBroadcastList()" class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white outline-none focus:border-orange-500 font-bold text-gray-700 cursor-pointer shadow-sm">
+                                <option value="all">Semua Warga Terdaftar</option>
+                                <option value="sapi">Khusus Pendaftar Daging Sapi</option>
+                                <option value="kambing">Khusus Pendaftar Daging Kambing</option>
+                            </select>
+                        </div>
+
+                        <!-- Step 1 -->
+                        <div class="bg-white p-5 rounded-2xl border-2 border-orange-100 relative shadow-sm">
+                            <div class="absolute -left-3 -top-3 w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-black shadow-md border-2 border-white">2</div>
+                            <h4 class="font-bold text-orange-900 mb-2">Salin Nomor Tujuan</h4>
+                            <p class="text-xs text-gray-500 font-medium mb-3">Sistem akan menyalin semua nomor WA yang Anda pilih di atas sekaligus.</p>
+                            <button onclick="copyAllWaNumbers()" class="w-full bg-gray-800 text-white font-extrabold tracking-wide py-3 px-4 rounded-xl hover:bg-gray-900 transition-colors shadow-sm flex justify-center items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                SALIN SEMUA NOMOR
+                            </button>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="bg-white p-5 rounded-2xl border-2 border-orange-100 relative shadow-sm">
+                            <div class="absolute -left-3 -top-3 w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-black shadow-md border-2 border-white">3</div>
+                            <h4 class="font-bold text-orange-900 mb-2">Siapkan Teks Pengumuman</h4>
+                            <p class="text-[11px] text-orange-600 font-semibold mb-2">Catatan: Jangan sebut nama warga, karena pesan ini akan dikirim sama persis ke semua orang.</p>
+                            <textarea id="broadcastMessage" rows="4" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all bg-gray-50 font-medium resize-none text-sm mb-3">Assalamu'alaikum Bapak/Ibu,
+
+Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk mengambil jatah daging Qurban Anda. Terima kasih.</textarea>
+                            
+                            <button onclick="copyBroadcastMessage()" class="w-full bg-orange-500 text-white font-extrabold tracking-wide py-3 px-4 rounded-xl hover:bg-orange-600 transition-colors shadow-sm flex justify-center items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                                SALIN TEKS PENGUMUMAN
+                            </button>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="bg-orange-50 p-6 rounded-2xl border border-orange-200 relative">
+                            <div class="absolute -left-3 -top-3 w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center font-black shadow-md border-2 border-white">4</div>
+                            <h4 class="font-black text-orange-900 mb-4 text-lg">Buka WhatsApp & Kirim!</h4>
+                            <ol class="text-sm text-gray-700 font-bold list-decimal pl-5 space-y-2">
+                                <li>Buka aplikasi WhatsApp di HP Anda.</li>
+                                <li>Klik <strong>Titik Tiga</strong> di sudut atas > Pilih <strong>Siaran Baru (New Broadcast)</strong>.</li>
+                                <li>Di bagian pencarian (atas), <strong>Tempel (Paste)</strong> nomor yang tadi sudah Anda salin di Langkah 2, lalu pilih semua kontaknya.</li>
+                                <li>Di dalam ruang obrolan Siaran tersebut, <strong>Tempel (Paste)</strong> Teks Pengumuman dari Langkah 3.</li>
+                                <li class="text-emerald-700">Tekan Kirim! Semua warga akan menerima pesan secara pribadi.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-gray-100 text-center">
+                        <p class="text-sm text-gray-500 font-medium mb-3">Atau ingin mengirim satu-per-satu?</p>
+                        <button onclick="document.getElementById('broadcastListContainer').classList.toggle('hidden')" class="text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 font-bold py-2 px-6 rounded-full transition-colors">
+                            Tampilkan Daftar Kirim Manual
+                        </button>
+                    </div>
+
+                    <!-- Daftar List Kirim Cepat WA (Tersembunyi by default) -->
+                    <div id="broadcastListContainer" class="hidden mt-6">
+                        <div class="custom-scrollbar max-h-96 overflow-y-auto pr-2 border-t-2 border-gray-100 pt-4" id="broadcastListItems">
+                            <!-- List diinject via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL PREVIEW TIKET (Untuk Halaman Tabel Dashboard) -->
             <div id="ticketModal" class="fixed inset-0 bg-black/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm">
                 <div class="bg-white rounded-3xl p-6 max-w-sm w-full relative">
                     <button onclick="closeTicketModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 bg-gray-100 rounded-full p-1 transition-colors">
@@ -374,6 +498,7 @@
                         <h3 class="text-xl font-black text-emerald-900 tracking-tight">Preview Kupon Warga</h3>
                     </div>
 
+                    <!-- KOTAK TIKET -->
                     <div id="modalTicketBox" class="bg-white border-2 border-dashed border-emerald-600 rounded-2xl overflow-hidden shadow-sm text-left relative mb-6">
                         <div class="absolute top-10 right-2 opacity-5 text-9xl z-0" id="modalTicketBgIcon">🐄</div>
                         <div class="bg-emerald-700 text-white p-4 flex justify-between items-center relative z-10">
@@ -401,6 +526,7 @@
                                 <p class="text-xs font-bold text-gray-700">Musholla Miftahul Ulum, Cipadu</p>
                             </div>
                             
+                            <!-- LOGO WATERMARK DI POJOK KANAN BAWAH TIKET -->
                             <img src="logo-musholla.jpg" alt="Logo" class="absolute bottom-4 right-5 w-14 h-14 object-contain rounded-full shadow-md border border-emerald-100 bg-white p-1" onerror="this.style.display='none'">
                         </div>
                     </div>
@@ -448,8 +574,9 @@
                     // Memunculkan pop up notifikasi teks berjalan
                     showNotification(`Info: Warga atas nama ${newEntry.name} (${meatLabel}) baru saja didaftarkan!`);
                     
-                    // Update tabel otomatis jika sedang berada di halaman dashboard
-                    if (!document.getElementById('pageDashboard').classList.contains('hidden')) {
+                    // Update tabel otomatis jika sedang berada di halaman dashboard atau broadcast
+                    if (!document.getElementById('pageDashboard').classList.contains('hidden') || 
+                        !document.getElementById('pageBroadcast').classList.contains('hidden')) {
                         loadData();
                     }
                 }
@@ -473,7 +600,7 @@
         let globalSisaSapi = 0;
         let globalSisaKambing = 0;
         let activeTicketData = null; // Menyimpan data tiket untuk di-download dari Modal
-        let allRegistrations = []; // Menyimpan semua data warga untuk fitur pencarian
+        let allRegistrations = []; // Menyimpan semua data warga untuk fitur pencarian & broadcast
 
         // ==========================================
         // MANAJEMEN HALAMAN & HISTORY API (TOMBOL BACK HP)
@@ -484,9 +611,10 @@
             const pageDashboard = document.getElementById('pageDashboard');
             const pageRegister = document.getElementById('pageRegister');
             const pageExport = document.getElementById('pageExport');
-            const pageStats = document.getElementById('pageStats'); // Halaman Statistik
+            const pageStats = document.getElementById('pageStats'); 
+            const pageBroadcast = document.getElementById('pageBroadcast'); // Halaman Broadcast
 
-            if(!loginSection || !mainAppSection || !pageDashboard || !pageRegister || !pageExport || !pageStats) return;
+            if(!loginSection || !mainAppSection || !pageDashboard || !pageRegister || !pageExport || !pageStats || !pageBroadcast) return;
 
             loginSection.classList.add('hidden');
             mainAppSection.classList.remove('hidden');
@@ -496,6 +624,7 @@
             pageRegister.classList.add('hidden');
             pageExport.classList.add('hidden');
             pageStats.classList.add('hidden');
+            pageBroadcast.classList.add('hidden');
 
             if (page === 'login') {
                 loginSection.classList.remove('hidden');
@@ -516,6 +645,10 @@
                 pageStats.classList.remove('hidden');
                 loadStatistics();
                 localStorage.setItem('qurban_lastPage', 'stats');
+            } else if (page === 'broadcast') {
+                pageBroadcast.classList.remove('hidden');
+                loadData(); // Memastikan data ditarik
+                localStorage.setItem('qurban_lastPage', 'broadcast');
             }
 
             // Integrasi History API agar tombol Back HP berfungsi
@@ -872,6 +1005,7 @@
                                     <p class="text-xs font-bold text-gray-700">Musholla Miftahul Ulum, Cipadu</p>
                                 </div>
                                 
+                                <!-- LOGO WATERMARK DI POJOK KANAN BAWAH TIKET -->
                                 <img src="logo-musholla.jpg" alt="Logo" class="absolute bottom-4 right-5 w-14 h-14 object-contain rounded-full shadow-md border border-emerald-100 bg-white p-1" onerror="this.style.display='none'">
                             </div>
                         </div>
@@ -979,6 +1113,9 @@
                 // Jika sedang di Dashboard, render tabel
                 if(!document.getElementById('pageDashboard').classList.contains('hidden')) filterTable(); 
                 
+                // Jika sedang di halaman Broadcast, render list broadcast
+                if(!document.getElementById('pageBroadcast').classList.contains('hidden')) renderBroadcastList();
+                
             } catch (err) {
                 console.error("Gagal load data", err);
             } finally {
@@ -1001,39 +1138,6 @@
             });
 
             renderTable(filteredData);
-        }
-
-        // ==========================================
-        // FITUR KIRIM PESAN WA OTOMATIS
-        // ==========================================
-        function sendWhatsAppMessage(dataStr) {
-            try {
-                // Parsing data kembali menjadi JSON object
-                const data = JSON.parse(dataStr.replace(/&#39;/g, "'"));
-                
-                if (!data.phone || data.phone.trim() === '' || data.phone.trim() === '-') {
-                    alert("Nomor WhatsApp tidak tersedia untuk warga ini.");
-                    return;
-                }
-                
-                // Format nomor menjadi internasional (+62) jika berawalan 0
-                let formattedPhone = data.phone.replace(/\D/g,''); 
-                if (formattedPhone.startsWith('0')) {
-                    formattedPhone = '62' + formattedPhone.substring(1);
-                }
-                
-                const meatLabel = data.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
-                
-                // Template Pesan WA 
-                const message = `Assalamu'alaikum Bapak/Ibu *${data.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${data.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
-                
-                // Buka tab WA
-                const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
-                window.open(waUrl, '_blank');
-            } catch (err) {
-                console.error("Gagal mengirim WA:", err);
-                alert("Terjadi kesalahan saat memproses data kontak.");
-            }
         }
 
         function renderTable(dataToRender) {
@@ -1066,6 +1170,141 @@
             `).join('');
         }
 
+        // ==========================================
+        // FITUR BROADCAST WA & KIRIM PESAN WA OTOMATIS
+        // ==========================================
+        function sendWhatsAppMessage(dataStr) {
+            try {
+                // Parsing data kembali menjadi JSON object
+                const data = JSON.parse(dataStr.replace(/&#39;/g, "'"));
+                
+                if (!data.phone || data.phone.trim() === '' || data.phone.trim() === '-') {
+                    alert("Nomor WhatsApp tidak tersedia untuk warga ini.");
+                    return;
+                }
+                
+                // Format nomor menjadi internasional (+62) jika berawalan 0
+                let formattedPhone = data.phone.replace(/\D/g,''); 
+                if (formattedPhone.startsWith('0')) {
+                    formattedPhone = '62' + formattedPhone.substring(1);
+                }
+                
+                const meatLabel = data.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
+                
+                // Template Pesan WA Default
+                const message = `Assalamu'alaikum Bapak/Ibu *${data.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${data.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
+                
+                // Buka tab WA
+                const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+                window.open(waUrl, '_blank');
+            } catch (err) {
+                console.error("Gagal mengirim WA:", err);
+                alert("Terjadi kesalahan saat memproses data kontak.");
+            }
+        }
+
+        function copyAllWaNumbers() {
+            const filter = document.getElementById('broadcastFilter').value;
+            const filtered = allRegistrations.filter(r => filter === 'all' || r.meat_choice === filter);
+            
+            if (filtered.length === 0) return alert("Tidak ada data warga untuk disalin.");
+            
+            // Format nomor: hilangkan spasi, ganti awalan 0 jadi 62
+            const numbers = filtered.map(r => {
+                let num = (r.phone || '').replace(/\D/g,'');
+                if (num.startsWith('0')) num = '62' + num.substring(1);
+                return num;
+            }).filter(num => num.length > 5).join(', ');
+
+            // Gunakan metode textarea (sangat kompatibel dengan berbagai HP)
+            const textArea = document.createElement("textarea");
+            textArea.value = numbers;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert(`Berhasil menyalin ${filtered.length} kontak WhatsApp!\n\nSilakan ikuti instruksi Langkah 3 untuk mengirimkan pesan.`);
+            } catch (ex) {
+                alert("Sistem HP Anda mencegah penyalinan otomatis. Silakan salin manual data Excel Anda.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function copyBroadcastMessage() {
+            const msg = document.getElementById('broadcastMessage').value || "Assalamu'alaikum Bapak/Ibu,\n\nMohon perhatiannya terkait pengambilan hewan Qurban. Terima kasih.";
+            const textArea = document.createElement("textarea");
+            textArea.value = msg;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert("Teks pengumuman berhasil disalin! Silakan paste di Ruang Siaran WhatsApp Anda.");
+            } catch (ex) {
+                alert("Gagal menyalin teks.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function renderBroadcastList() {
+            const container = document.getElementById('broadcastListContainer');
+            const listItems = document.getElementById('broadcastListItems');
+            if (!container || !listItems) return;
+
+            const filter = document.getElementById('broadcastFilter').value;
+            const filtered = allRegistrations.filter(r => filter === 'all' || r.meat_choice === filter);
+
+            if (filtered.length === 0) {
+                listItems.innerHTML = '<p class="text-center text-gray-500 py-4 font-medium">Belum ada data warga terdaftar untuk kategori ini.</p>';
+            } else {
+                listItems.innerHTML = filtered.map(r => {
+                    return `
+                        <div class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-orange-50 transition-colors rounded-xl">
+                            <div>
+                                <p class="font-black text-gray-800 text-sm tracking-tight">${r.name}</p>
+                                <div class="flex gap-2 items-center mt-1">
+                                    <p class="text-xs text-gray-500 font-mono">${r.phone}</p>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${r.meat_choice === 'sapi' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}">${r.meat_choice.toUpperCase()}</span>
+                                </div>
+                            </div>
+                            <button onclick='sendCustomBroadcast(\`${JSON.stringify(r).replace(/'/g, "&#39;")}\`)' class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-extrabold tracking-wide transition-colors flex items-center gap-1.5 shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                Kirim
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+            container.classList.remove('hidden');
+        }
+
+        function sendCustomBroadcast(dataStr) {
+            try {
+                const data = JSON.parse(dataStr.replace(/&#39;/g, "'"));
+                if (!data.phone) return alert("Nomor WhatsApp tidak tersedia.");
+                
+                let formattedPhone = data.phone.replace(/\D/g,''); 
+                if (formattedPhone.startsWith('0')) formattedPhone = '62' + formattedPhone.substring(1);
+                
+                let template = document.getElementById('broadcastMessage').value;
+                if (!template.trim()) {
+                    // Pesan bawaan jika text area dikosongkan
+                    template = `Assalamu'alaikum Bapak/Ibu *[NAMA]*,\n\nMohon perhatiannya terkait pengambilan hewan Qurban. Terima kasih.`;
+                }
+
+                // Ganti tag [NAMA] dengan nama asli warga
+                const message = template.replace(/\[NAMA\]/g, data.name);
+                
+                const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+                window.open(waUrl, '_blank');
+            } catch (err) {
+                console.error(err);
+                alert("Terjadi kesalahan saat memproses pesan.");
+            }
+        }
+
+        // ==========================================
+        // LOGIKA TIKET MODAL PREVIEW
+        // ==========================================
         function showTicketModal(data) {
             activeTicketData = data;
             
@@ -1123,10 +1362,13 @@
                 const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
                 const file = new File([blob], `Tiket_${activeTicketData.name}_${activeTicketData.ticket_number}.png`, { type: 'image/png' });
 
+                const meatLabel = activeTicketData.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
+                const message = `Assalamu'alaikum Bapak/Ibu *${activeTicketData.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${activeTicketData.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
+
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     await navigator.share({
                         title: 'Kupon Qurban',
-                        text: `Assalamu'alaikum Bapak/Ibu *${data.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${data.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`,
+                        text: message,
                         files: [file]
                     });
                 } else {

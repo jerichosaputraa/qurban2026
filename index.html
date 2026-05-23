@@ -109,14 +109,14 @@
                     <p class="text-gray-600 bg-white/80 inline-block px-4 py-1.5 rounded-full backdrop-blur-sm shadow-sm font-medium">Pilih aksi di bawah, atau gulir ke bawah untuk melihat data warga.</p>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                     <!-- Tombol Menu Pendataan -->
                     <div onclick="showPage('register')" class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-200 hover:border-emerald-500 hover:shadow-lg transition-all cursor-pointer group text-center flex flex-col items-center">
                         <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
                         </div>
-                        <h3 class="text-xl font-extrabold text-emerald-900 mb-2">Pendataan Baru</h3>
-                        <p class="text-sm font-medium text-gray-500 leading-relaxed">Formulir pendaftaran warga dan pencetakan e-kupon qurban baru.</p>
+                        <h3 class="text-lg font-extrabold text-emerald-900 mb-2">Pendataan Baru</h3>
+                        <p class="text-xs font-medium text-gray-500 leading-relaxed">Formulir pendaftaran dan cetak e-kupon baru.</p>
                     </div>
 
                     <!-- Tombol Menu Statistik -->
@@ -124,8 +124,17 @@
                         <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                         </div>
-                        <h3 class="text-xl font-extrabold text-purple-900 mb-2">Statistik Harian</h3>
-                        <p class="text-sm font-medium text-gray-500 leading-relaxed">Pantau ringkasan jumlah pendaftar dan sisa kuota saat ini.</p>
+                        <h3 class="text-lg font-extrabold text-purple-900 mb-2">Statistik Harian</h3>
+                        <p class="text-xs font-medium text-gray-500 leading-relaxed">Pantau ringkasan pendaftar & sisa kuota.</p>
+                    </div>
+                    
+                    <!-- Tombol Menu Broadcast WA (BARU) -->
+                    <div onclick="showPage('broadcast')" class="bg-white p-6 rounded-2xl shadow-sm border border-orange-200 hover:border-orange-500 hover:shadow-lg transition-all cursor-pointer group text-center flex flex-col items-center">
+                        <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>
+                        </div>
+                        <h3 class="text-lg font-extrabold text-orange-900 mb-2">Broadcast WA</h3>
+                        <p class="text-xs font-medium text-gray-500 leading-relaxed">Kirim pengumuman massal atau salin kontak warga.</p>
                     </div>
 
                     <!-- Tombol Menu Export -->
@@ -133,8 +142,8 @@
                         <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
                         </div>
-                        <h3 class="text-xl font-extrabold text-blue-900 mb-2">Export Data</h3>
-                        <p class="text-sm font-medium text-gray-500 leading-relaxed">Unduh data pendaftar ke dalam format tabel Excel (.xlsx).</p>
+                        <h3 class="text-lg font-extrabold text-blue-900 mb-2">Export Data</h3>
+                        <p class="text-xs font-medium text-gray-500 leading-relaxed">Unduh data pendaftar ke tabel Excel (.xlsx).</p>
                     </div>
                 </div>
 
@@ -386,6 +395,54 @@
                 </div>
             </div>
 
+            <!-- 5. HALAMAN BROADCAST WA -->
+            <div id="pageBroadcast" class="w-full max-w-4xl hidden relative z-10 mt-4">
+                <div class="flex items-center gap-4 mb-6 justify-center md:justify-start relative">
+                    <button onclick="showPage('dashboard')" class="bg-white p-2 rounded-full shadow-sm text-orange-700 hover:bg-orange-50 absolute left-4 md:left-0 top-0 border border-orange-100 z-20">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="w-full text-center">
+                        <h2 class="text-2xl md:text-3xl font-black text-orange-900 tracking-tight">Broadcast WhatsApp</h2>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm p-6 sm:p-8 border border-gray-200 mt-8">
+                    <div class="mb-6">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Pilih Penerima</label>
+                        <select id="broadcastFilter" onchange="renderBroadcastList()" class="w-full px-4 py-3 border border-gray-300 rounded-xl mb-6 bg-gray-50 outline-none focus:border-orange-500 font-bold text-gray-700 cursor-pointer">
+                            <option value="all">Semua Pendaftar</option>
+                            <option value="sapi">Khusus Pendaftar Sapi</option>
+                            <option value="kambing">Khusus Pendaftar Kambing</option>
+                        </select>
+
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Isi Pesan Pengumuman</label>
+                        <textarea id="broadcastMessage" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all bg-gray-50 font-medium resize-none" placeholder="Assalamu'alaikum Bapak/Ibu [NAMA],&#10;Mohon untuk segera mengambil jatah Qurban Anda..."></textarea>
+                        <p class="text-xs text-gray-500 mt-2 font-medium bg-orange-50 p-3 rounded-lg border border-orange-100">
+                            💡 <strong class="text-orange-800">Tips Cerdas:</strong> Gunakan kata <strong class="bg-orange-200 px-1 rounded text-orange-900">[NAMA]</strong> dalam teks Anda untuk menyebut nama warga secara otomatis agar terasa lebih personal.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-3 mb-8">
+                        <button onclick="copyAllWaNumbers()" class="flex-1 bg-gray-800 text-white font-extrabold tracking-wide py-3 px-4 rounded-xl hover:bg-gray-900 transition-colors shadow-sm flex justify-center items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            SALIN SEMUA NOMOR
+                        </button>
+                        <button onclick="renderBroadcastList()" class="flex-1 bg-orange-500 text-white font-extrabold tracking-wide py-3 px-4 rounded-xl hover:bg-orange-600 transition-colors shadow-sm flex justify-center items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 22-7z"/></svg>
+                            TAMPILKAN DAFTAR KIRIM
+                        </button>
+                    </div>
+
+                    <!-- Daftar List Kirim Cepat WA -->
+                    <div id="broadcastListContainer" class="hidden">
+                        <h3 class="text-lg font-black text-gray-800 mb-3 border-b-2 border-gray-100 pb-2">Daftar Kirim Cepat</h3>
+                        <div class="custom-scrollbar max-h-96 overflow-y-auto pr-2" id="broadcastListItems">
+                            <!-- List diinject via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- MODAL PREVIEW TIKET (Untuk Halaman Tabel Dashboard) -->
             <div id="ticketModal" class="fixed inset-0 bg-black/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm">
                 <div class="bg-white rounded-3xl p-6 max-w-sm w-full relative">
@@ -473,8 +530,9 @@
                     // Memunculkan pop up notifikasi teks berjalan
                     showNotification(`Info: Warga atas nama ${newEntry.name} (${meatLabel}) baru saja didaftarkan!`);
                     
-                    // Update tabel otomatis jika sedang berada di halaman dashboard
-                    if (!document.getElementById('pageDashboard').classList.contains('hidden')) {
+                    // Update tabel otomatis jika sedang berada di halaman dashboard atau broadcast
+                    if (!document.getElementById('pageDashboard').classList.contains('hidden') || 
+                        !document.getElementById('pageBroadcast').classList.contains('hidden')) {
                         loadData();
                     }
                 }
@@ -498,7 +556,7 @@
         let globalSisaSapi = 0;
         let globalSisaKambing = 0;
         let activeTicketData = null; // Menyimpan data tiket untuk di-download dari Modal
-        let allRegistrations = []; // Menyimpan semua data warga untuk fitur pencarian
+        let allRegistrations = []; // Menyimpan semua data warga untuk fitur pencarian & broadcast
 
         // ==========================================
         // MANAJEMEN HALAMAN & HISTORY API (TOMBOL BACK HP)
@@ -509,9 +567,10 @@
             const pageDashboard = document.getElementById('pageDashboard');
             const pageRegister = document.getElementById('pageRegister');
             const pageExport = document.getElementById('pageExport');
-            const pageStats = document.getElementById('pageStats'); // Halaman Statistik
+            const pageStats = document.getElementById('pageStats'); 
+            const pageBroadcast = document.getElementById('pageBroadcast'); // Halaman Broadcast
 
-            if(!loginSection || !mainAppSection || !pageDashboard || !pageRegister || !pageExport || !pageStats) return;
+            if(!loginSection || !mainAppSection || !pageDashboard || !pageRegister || !pageExport || !pageStats || !pageBroadcast) return;
 
             loginSection.classList.add('hidden');
             mainAppSection.classList.remove('hidden');
@@ -521,6 +580,7 @@
             pageRegister.classList.add('hidden');
             pageExport.classList.add('hidden');
             pageStats.classList.add('hidden');
+            pageBroadcast.classList.add('hidden');
 
             if (page === 'login') {
                 loginSection.classList.remove('hidden');
@@ -541,6 +601,10 @@
                 pageStats.classList.remove('hidden');
                 loadStatistics();
                 localStorage.setItem('qurban_lastPage', 'stats');
+            } else if (page === 'broadcast') {
+                pageBroadcast.classList.remove('hidden');
+                loadData(); // Memastikan data ditarik
+                localStorage.setItem('qurban_lastPage', 'broadcast');
             }
 
             // Integrasi History API agar tombol Back HP berfungsi
@@ -956,13 +1020,18 @@
         // ==========================================
         async function loadData() {
             const tableLoading = document.getElementById('tableLoading');
-            if(tableLoading) tableLoading.classList.remove('hidden');
+            if(tableLoading && !document.getElementById('pageDashboard').classList.contains('hidden')) tableLoading.classList.remove('hidden');
             try {
                 // Urutkan berdasarkan created_at descending (terbaru di atas)
                 const { data } = await supabaseClient.from('registrations').select('*').order('created_at', { ascending: false });
                 
                 allRegistrations = data || []; // Simpan data ke variabel global
-                filterTable(); // Panggil fungsi filter (Otomatis merender tabel)
+                
+                // Jika sedang di Dashboard, render tabel
+                if(!document.getElementById('pageDashboard').classList.contains('hidden')) filterTable(); 
+                
+                // Jika sedang di halaman Broadcast, render list broadcast
+                if(!document.getElementById('pageBroadcast').classList.contains('hidden')) renderBroadcastList();
                 
             } catch (err) {
                 console.error("Gagal load data", err);
@@ -986,39 +1055,6 @@
             });
 
             renderTable(filteredData);
-        }
-
-        // ==========================================
-        // FITUR KIRIM PESAN WA OTOMATIS
-        // ==========================================
-        function sendWhatsAppMessage(dataStr) {
-            try {
-                // Parsing data kembali menjadi JSON object
-                const data = JSON.parse(dataStr.replace(/&#39;/g, "'"));
-                
-                if (!data.phone) {
-                    alert("Nomor WhatsApp tidak tersedia untuk warga ini.");
-                    return;
-                }
-                
-                // Format nomor menjadi internasional (+62) jika berawalan 0
-                let formattedPhone = data.phone.replace(/\D/g,''); 
-                if (formattedPhone.startsWith('0')) {
-                    formattedPhone = '62' + formattedPhone.substring(1);
-                }
-                
-                const meatLabel = data.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
-                
-                // Template Pesan WA 
-                const message = `Assalamu'alaikum Bapak/Ibu *${data.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${data.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
-                
-                // Buka tab WA
-                const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
-                window.open(waUrl, '_blank');
-            } catch (err) {
-                console.error("Gagal mengirim WA:", err);
-                alert("Terjadi kesalahan saat memproses data kontak.");
-            }
         }
 
         function renderTable(dataToRender) {
@@ -1051,6 +1087,126 @@
             `).join('');
         }
 
+        // ==========================================
+        // FITUR BROADCAST WA & KIRIM PESAN WA OTOMATIS
+        // ==========================================
+        function sendWhatsAppMessage(dataStr) {
+            try {
+                // Parsing data kembali menjadi JSON object
+                const data = JSON.parse(dataStr.replace(/&#39;/g, "'"));
+                
+                if (!data.phone) {
+                    alert("Nomor WhatsApp tidak tersedia untuk warga ini.");
+                    return;
+                }
+                
+                // Format nomor menjadi internasional (+62) jika berawalan 0
+                let formattedPhone = data.phone.replace(/\D/g,''); 
+                if (formattedPhone.startsWith('0')) {
+                    formattedPhone = '62' + formattedPhone.substring(1);
+                }
+                
+                const meatLabel = data.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
+                
+                // Template Pesan WA Default
+                const message = `Assalamu'alaikum Bapak/Ibu *${data.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${data.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
+                
+                // Buka tab WA
+                const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+                window.open(waUrl, '_blank');
+            } catch (err) {
+                console.error("Gagal mengirim WA:", err);
+                alert("Terjadi kesalahan saat memproses data kontak.");
+            }
+        }
+
+        function copyAllWaNumbers() {
+            const filter = document.getElementById('broadcastFilter').value;
+            const filtered = allRegistrations.filter(r => filter === 'all' || r.meat_choice === filter);
+            
+            if (filtered.length === 0) return alert("Tidak ada data warga untuk disalin.");
+            
+            // Format nomor: hilangkan spasi, ganti awalan 0 jadi 62
+            const numbers = filtered.map(r => {
+                let num = (r.phone || '').replace(/\D/g,'');
+                if (num.startsWith('0')) num = '62' + num.substring(1);
+                return num;
+            }).filter(num => num.length > 5).join(', ');
+
+            // Gunakan metode textarea (sangat kompatibel dengan berbagai HP)
+            const textArea = document.createElement("textarea");
+            textArea.value = numbers;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert(`Berhasil menyalin ${filtered.length} kontak WhatsApp!\n\nSilakan buka aplikasi WhatsApp > Buat "Daftar Siaran" (Broadcast List) Baru > Paste nomor-nomor ini di kotak pencarian.`);
+            } catch (ex) {
+                alert("Sistem HP Anda mencegah penyalinan otomatis. Silakan salin manual data Excel Anda.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function renderBroadcastList() {
+            const container = document.getElementById('broadcastListContainer');
+            const listItems = document.getElementById('broadcastListItems');
+            if (!container || !listItems) return;
+
+            const filter = document.getElementById('broadcastFilter').value;
+            const filtered = allRegistrations.filter(r => filter === 'all' || r.meat_choice === filter);
+
+            if (filtered.length === 0) {
+                listItems.innerHTML = '<p class="text-center text-gray-500 py-4 font-medium">Belum ada data warga terdaftar untuk kategori ini.</p>';
+            } else {
+                listItems.innerHTML = filtered.map(r => {
+                    return `
+                        <div class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-orange-50 transition-colors rounded-xl">
+                            <div>
+                                <p class="font-black text-gray-800 text-sm tracking-tight">${r.name}</p>
+                                <div class="flex gap-2 items-center mt-1">
+                                    <p class="text-xs text-gray-500 font-mono">${r.phone}</p>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${r.meat_choice === 'sapi' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}">${r.meat_choice.toUpperCase()}</span>
+                                </div>
+                            </div>
+                            <button onclick='sendCustomBroadcast(\`${JSON.stringify(r).replace(/'/g, "&#39;")}\`)' class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-extrabold tracking-wide transition-colors flex items-center gap-1.5 shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                Kirim
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+            container.classList.remove('hidden');
+        }
+
+        function sendCustomBroadcast(dataStr) {
+            try {
+                const data = JSON.parse(dataStr.replace(/&#39;/g, "'"));
+                if (!data.phone) return alert("Nomor WhatsApp tidak tersedia.");
+                
+                let formattedPhone = data.phone.replace(/\D/g,''); 
+                if (formattedPhone.startsWith('0')) formattedPhone = '62' + formattedPhone.substring(1);
+                
+                let template = document.getElementById('broadcastMessage').value;
+                if (!template.trim()) {
+                    // Pesan bawaan jika text area dikosongkan
+                    template = `Assalamu'alaikum Bapak/Ibu *[NAMA]*,\n\nMohon perhatiannya terkait pengambilan hewan Qurban. Terima kasih.`;
+                }
+
+                // Ganti tag [NAMA] dengan nama asli warga
+                const message = template.replace(/\[NAMA\]/g, data.name);
+                
+                const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+                window.open(waUrl, '_blank');
+            } catch (err) {
+                console.error(err);
+                alert("Terjadi kesalahan saat memproses pesan.");
+            }
+        }
+
+        // ==========================================
+        // LOGIKA TIKET MODAL PREVIEW
+        // ==========================================
         function showTicketModal(data) {
             activeTicketData = data;
             

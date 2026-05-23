@@ -13,9 +13,20 @@
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 8px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #10b981; border-radius: 8px; }
+        
+        /* Animasi Teks Berjalan */
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .animate-marquee { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; }
     </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Notifikasi Realtime (Polling) -->
+    <div id="notificationBanner" class="hidden fixed top-0 w-full bg-emerald-600 text-white py-2 z-[9999] shadow-lg overflow-hidden whitespace-nowrap">
+        <div id="marqueeText" class="animate-marquee font-bold text-sm px-4 text-yellow-300 tracking-wide">
+            <!-- Teks notifikasi akan diisi oleh JS -->
+        </div>
+    </div>
 
     <!-- Section Login -->
     <div id="loginSection" class="flex-1 flex flex-col justify-center items-center px-4 py-12 bg-emerald-800 relative overflow-hidden">
@@ -325,6 +336,50 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5amp2YmhvaWFqbmlqZnJjYnR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2Nzg1NzYsImV4cCI6MjA5NDI1NDU3Nn0.0T8f0rPPdBwbFW0sxwjp6NgJrWgyjfCTcYOKnWPaHQA';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // ==========================================
+        // SISTEM POLLING (NOTIFIKASI POP UP ANTAR HP PANITIA)
+        // ==========================================
+        let lastCheckTime = new Date().toISOString();
+        
+        setInterval(async () => {
+            // Jangan jalankan pengecekan jika panitia belum login
+            if (document.getElementById('mainAppSection').classList.contains('hidden')) return;
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('registrations')
+                    .select('*')
+                    .gt('created_at', lastCheckTime)
+                    .order('created_at', { ascending: false });
+
+                if (!error && data && data.length > 0) {
+                    lastCheckTime = data[0].created_at; // Update waktu terakhir pengecekan
+                    const newEntry = data[0];
+                    const meatLabel = newEntry.meat_choice === 'sapi' ? 'Sapi 🐄' : 'Kambing 🐐';
+                    
+                    // Memunculkan pop up notifikasi teks berjalan
+                    showNotification(`Info: Warga atas nama ${newEntry.name} (${meatLabel}) baru saja didaftarkan!`);
+                    
+                    // Update tabel otomatis jika sedang berada di halaman dashboard
+                    if (!document.getElementById('pageDashboard').classList.contains('hidden')) {
+                        loadData();
+                    }
+                }
+            } catch (err) {
+                console.error("Polling error:", err);
+            }
+        }, 10000); // Mengecek data baru setiap 10 detik
+
+        function showNotification(text) {
+            const banner = document.getElementById('notificationBanner');
+            const marquee = document.getElementById('marqueeText');
+            if(!banner || !marquee) return;
+            
+            marquee.textContent = text;
+            banner.classList.remove('hidden');
+            setTimeout(() => banner.classList.add('hidden'), 15000); // Hilang setelah 15 detik
+        }
+
         const LIMIT_SAPI = 200;
         const LIMIT_KAMBING = 100;
         let globalSisaSapi = 0;
@@ -335,26 +390,34 @@
         // MANAJEMEN HALAMAN & HISTORY API (TOMBOL BACK HP)
         // ==========================================
         function showPage(page, pushToHistory = true) {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('mainAppSection').classList.remove('hidden');
-            document.getElementById('mainAppSection').classList.add('flex');
+            const loginSection = document.getElementById('loginSection');
+            const mainAppSection = document.getElementById('mainAppSection');
+            const pageDashboard = document.getElementById('pageDashboard');
+            const pageRegister = document.getElementById('pageRegister');
+            const pageExport = document.getElementById('pageExport');
 
-            document.getElementById('pageDashboard').classList.add('hidden');
-            document.getElementById('pageRegister').classList.add('hidden');
-            document.getElementById('pageExport').classList.add('hidden');
+            if(!loginSection || !mainAppSection || !pageDashboard || !pageRegister || !pageExport) return;
+
+            loginSection.classList.add('hidden');
+            mainAppSection.classList.remove('hidden');
+            mainAppSection.classList.add('flex');
+
+            pageDashboard.classList.add('hidden');
+            pageRegister.classList.add('hidden');
+            pageExport.classList.add('hidden');
 
             if (page === 'login') {
-                document.getElementById('loginSection').classList.remove('hidden');
-                document.getElementById('mainAppSection').classList.add('hidden');
-                document.getElementById('mainAppSection').classList.remove('flex');
+                loginSection.classList.remove('hidden');
+                mainAppSection.classList.add('hidden');
+                mainAppSection.classList.remove('flex');
             } else if (page === 'dashboard') {
-                document.getElementById('pageDashboard').classList.remove('hidden');
+                pageDashboard.classList.remove('hidden');
                 loadData(); // Load tabel data warga setiap kali ke dashboard
             } else if (page === 'register') {
-                document.getElementById('pageRegister').classList.remove('hidden');
+                pageRegister.classList.remove('hidden');
                 checkQuotas();
             } else if (page === 'export') {
-                document.getElementById('pageExport').classList.remove('hidden');
+                pageExport.classList.remove('hidden');
             }
 
             // Integrasi History API agar tombol Back HP berfungsi
@@ -371,7 +434,8 @@
         // Deteksi jika tombol "Back" atau usap mundur pada layar HP dilakukan
         window.addEventListener('popstate', (e) => {
             // Tutup modal jika sedang terbuka
-            if (!document.getElementById('ticketModal').classList.contains('hidden')) {
+            const ticketModal = document.getElementById('ticketModal');
+            if (ticketModal && !ticketModal.classList.contains('hidden')) {
                 closeTicketModal();
                 // Sengaja return agar tidak merubah halaman, cukup tutup modal saja
                 return; 
@@ -685,7 +749,8 @@
         // LOGIKA TABEL & TIKET MODAL
         // ==========================================
         async function loadData() {
-            document.getElementById('tableLoading').classList.remove('hidden');
+            const tableLoading = document.getElementById('tableLoading');
+            if(tableLoading) tableLoading.classList.remove('hidden');
             try {
                 // Urutkan berdasarkan created_at descending (terbaru di atas)
                 const { data } = await supabaseClient.from('registrations').select('*').order('created_at', { ascending: false });
@@ -712,7 +777,7 @@
             } catch (err) {
                 console.error("Gagal load data", err);
             } finally {
-                document.getElementById('tableLoading').classList.add('hidden');
+                if(tableLoading) tableLoading.classList.add('hidden');
             }
         }
 

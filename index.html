@@ -439,11 +439,14 @@
             } else if (page === 'dashboard') {
                 pageDashboard.classList.remove('hidden');
                 loadData(); // Load tabel data warga setiap kali ke dashboard
+                localStorage.setItem('qurban_lastPage', 'dashboard');
             } else if (page === 'register') {
                 pageRegister.classList.remove('hidden');
                 checkQuotas();
+                localStorage.setItem('qurban_lastPage', 'register');
             } else if (page === 'export') {
                 pageExport.classList.remove('hidden');
+                localStorage.setItem('qurban_lastPage', 'export');
             }
 
             // Integrasi History API agar tombol Back HP berfungsi
@@ -452,8 +455,31 @@
             }
         }
 
-        // Setup awal saat web dimuat
+        // Setup awal saat web dimuat (Memeriksa Local Storage untuk Auto-Login)
         window.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem('qurban_loggedIn');
+            const loginTime = localStorage.getItem('qurban_loginTime');
+            const lastPage = localStorage.getItem('qurban_lastPage') || 'dashboard';
+            const ONE_DAY = 24 * 60 * 60 * 1000; // 24 Jam dalam milidetik
+
+            // Cek apakah pernah login dan waktunya belum lewat 24 jam
+            if (isLoggedIn === 'true' && loginTime) {
+                const timeElapsed = Date.now() - parseInt(loginTime);
+                if (timeElapsed < ONE_DAY) {
+                    // Sesi masih valid, langsung tampilkan halaman terakhir
+                    showPage(lastPage, false);
+                    history.replaceState({ page: lastPage }, '', '#' + lastPage);
+                    return; // Hentikan fungsi disini agar tidak lanjut ke login
+                } else {
+                    // Jika sudah lebih dari 24 jam, hapus sesi (Logout otomatis)
+                    localStorage.removeItem('qurban_loggedIn');
+                    localStorage.removeItem('qurban_loginTime');
+                    localStorage.removeItem('qurban_lastPage');
+                }
+            }
+
+            // Jika tidak ada sesi valid, kembali ke menu login
+            showPage('login', false);
             history.replaceState({ page: 'login' }, '', '#login');
         });
 
@@ -470,13 +496,25 @@
             if (e.state && e.state.page) {
                 showPage(e.state.page, false); // false = jangan push history lagi agar tidak infinite loop
             } else {
-                showPage('login', false);
+                // Jika tidak ada history state dan user sedang tidak di halaman login, 
+                // biarkan mereka di halaman terakhir yang tersimpan di localStorage
+                const isLoggedIn = localStorage.getItem('qurban_loggedIn');
+                if(isLoggedIn === 'true') {
+                    const lastPage = localStorage.getItem('qurban_lastPage') || 'dashboard';
+                    showPage(lastPage, false);
+                } else {
+                    showPage('login', false);
+                }
             }
         });
 
         function handleLogin(e) {
             e.preventDefault();
             if(document.getElementById('pinInput').value === "123456") {
+                // Saat login berhasil, simpan status dan waktu saat ini di Local Storage
+                localStorage.setItem('qurban_loggedIn', 'true');
+                localStorage.setItem('qurban_loginTime', Date.now().toString());
+                
                 showPage('dashboard');
             } else {
                 alert("PIN Salah");
@@ -486,6 +524,11 @@
 
         function handleLogout() {
             if(confirm("Yakin ingin keluar?")) {
+                // Saat logout, bersihkan semua data penyimpanan sesi
+                localStorage.removeItem('qurban_loggedIn');
+                localStorage.removeItem('qurban_loginTime');
+                localStorage.removeItem('qurban_lastPage');
+                
                 showPage('login');
                 document.getElementById('pinInput').value = '';
                 resetRegisterForm();

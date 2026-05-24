@@ -1073,7 +1073,7 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
                 const meatLabel = isSapi ? 'Daging Sapi' : 'Daging Kambing';
                 const joinedCodes = codes.join(', ');
                 
-                const message = `Assalamu'alaikum Bapak/Ibu *${pendaftarName}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${joinedCodes}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
+                const message = `Assalamu'alaikum Bapak/Ibu *${pendaftarName}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan daging qurban dengan *Nomor Antrean: ${joinedCodes}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
 
                 if (navigator.canShare && navigator.canShare({ files: filesArray })) {
                     await navigator.share({ title: 'Kupon Qurban', text: message, files: filesArray });

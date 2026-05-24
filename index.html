@@ -1060,7 +1060,7 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
                 let isSapi = false;
                 
                 for (let i = 0; i < ticketElements.length; i++) {
-                    const canvas = await html2canvas(ticketElements[i], { scale: 2, backgroundColor: "#ffffff" });
+                    const canvas = await html2canvas(ticketElements[i], { scale: 2, backgroundColor: "#ffffff", useCORS: true });
                     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                     const code = ticketElements[i].querySelector('.ticket-code-text').textContent;
                     const name = ticketElements[i].querySelector('.user-name-text').textContent;
@@ -1083,7 +1083,20 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
                 if (navigator.canShare && navigator.canShare({ files: filesArray })) {
                     await navigator.share({ title: 'Kupon Qurban', text: message, files: filesArray });
                 } else {
-                    alert("Perangkat tidak mendukung kirim gambar massal langsung. Gunakan tombol Simpan/Cetak.");
+                    // JIKA GAGAL/DITOLAK HP: Otomatis alihkan ke proses Download/Simpan
+                    alert("Sistem HP menolak kirim langsung. Tiket akan otomatis disimpan ke Galeri Anda.");
+                    for (let i = 0; i < ticketElements.length; i++) {
+                        const canvas = await html2canvas(ticketElements[i], { scale: 2, backgroundColor: "#ffffff", useCORS: true });
+                        const link = document.createElement("a");
+                        link.href = canvas.toDataURL("image/png");
+                        const code = ticketElements[i].querySelector('.ticket-code-text').textContent;
+                        const name = ticketElements[i].querySelector('.user-name-text').textContent.replace(/\s+/g, '_');
+                        link.download = `Tiket_${name}_${code}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        await new Promise(r => setTimeout(r, 400));
+                    }
                 }
             } catch (err) {
                 if(err.name !== 'AbortError') console.error(err);
@@ -1102,7 +1115,7 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
 
             try {
                 for (let i = 0; i < ticketElements.length; i++) {
-                    const canvas = await html2canvas(ticketElements[i], { scale: 2, backgroundColor: "#ffffff" });
+                    const canvas = await html2canvas(ticketElements[i], { scale: 2, backgroundColor: "#ffffff", useCORS: true });
                     const link = document.createElement("a");
                     link.href = canvas.toDataURL("image/png");
                     const code = ticketElements[i].querySelector('.ticket-code-text').textContent;
@@ -1486,7 +1499,7 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
             
             try {
                 const element = document.getElementById('modalTicketBox');
-                const canvas = await html2canvas(element, { scale: 2, backgroundColor: "#ffffff" });
+                const canvas = await html2canvas(element, { scale: 2, backgroundColor: "#ffffff", useCORS: true });
                 const link = document.createElement("a");
                 link.href = canvas.toDataURL("image/png");
                 link.download = `Tiket_${activeTicketData.name.replace(/\s+/g, '_')}_${activeTicketData.ticket_number}.png`;
@@ -1508,7 +1521,7 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
             
             try {
                 const element = document.getElementById('modalTicketBox');
-                const canvas = await html2canvas(element, { scale: 2, backgroundColor: "#ffffff" });
+                const canvas = await html2canvas(element, { scale: 2, backgroundColor: "#ffffff", useCORS: true });
                 const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
                 const file = new File([blob], `Tiket_${activeTicketData.name}_${activeTicketData.ticket_number}.png`, { type: 'image/png' });
 
@@ -1522,7 +1535,14 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
                         files: [file]
                     });
                 } else {
-                    alert("Perangkat tidak mendukung kirim gambar langsung. Silakan gunakan tombol Simpan.");
+                    // JIKA GAGAL/DITOLAK HP: Otomatis alihkan ke proses Download/Simpan
+                    alert("Sistem HP menolak kirim langsung. Tiket akan otomatis disimpan ke Galeri Anda.");
+                    const link = document.createElement("a");
+                    link.href = canvas.toDataURL("image/png");
+                    link.download = `Tiket_${activeTicketData.name.replace(/\s+/g, '_')}_${activeTicketData.ticket_number}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                 }
             } catch (err) {
                 console.error(err);

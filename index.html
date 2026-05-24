@@ -1073,7 +1073,7 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
                 const meatLabel = isSapi ? 'Daging Sapi' : 'Daging Kambing';
                 const joinedCodes = codes.join(', ');
                 
-                const message = `Assalamu'alaikum Bapak/Ibu *${pendaftarName}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${joinedCodes}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
+                const message = `Assalamu'alaikum Bapak/Ibu *${pendaftarName}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan daging qurban dengan *Nomor Antrean: ${joinedCodes}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
 
                 if (navigator.canShare && navigator.canShare({ files: filesArray })) {
                     await navigator.share({ title: 'Kupon Qurban', text: message, files: filesArray });
@@ -1211,7 +1211,7 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
                 const meatLabel = data.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
                 
                 // Template Pesan WA Default
-                const message = `Assalamu'alaikum Bapak/Ibu *${data.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${data.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
+                const message = `Assalamu'alaikum Bapak/Ibu *${data.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan daging qurban dengan *Nomor Antrean: ${data.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
                 
                 // Buka tab WA
                 const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
@@ -1381,7 +1381,7 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
                 const file = new File([blob], `Tiket_${activeTicketData.name}_${activeTicketData.ticket_number}.png`, { type: 'image/png' });
 
                 const meatLabel = activeTicketData.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
-                const message = `Assalamu'alaikum Bapak/Ibu *${activeTicketData.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${activeTicketData.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
+                const message = `Assalamu'alaikum Bapak/Ibu *${activeTicketData.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan daging qurban dengan *Nomor Antrean: ${activeTicketData.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
 
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     await navigator.share({

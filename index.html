@@ -156,7 +156,7 @@
                         </div>
                     </div>
 
-                    <!-- FITUR PENCARIAN & FILTER -->
+                    <!-- FITUR PENCARIAN, FILTER & CETAK CHECKLIST -->
                     <div class="flex flex-col md:flex-row gap-3 mb-4">
                         <div class="flex-1 relative">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -164,7 +164,7 @@
                             </div>
                             <input type="text" id="searchInput" oninput="filterTable()" placeholder="Cari nama, No WA, atau tiket..." class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all font-medium text-sm bg-white">
                         </div>
-                        <div class="md:w-56 relative">
+                        <div class="md:w-48 relative">
                             <select id="typeFilter" onchange="filterTable()" class="w-full px-4 py-3 border border-gray-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all font-bold text-sm bg-white cursor-pointer appearance-none text-emerald-900">
                                 <option value="all">Semua Daging</option>
                                 <option value="sapi">🐄 Khusus Sapi</option>
@@ -174,13 +174,18 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                             </div>
                         </div>
+                        <!-- TOMBOL CETAK CHECKLIST FISIK -->
+                        <button onclick="printChecklist()" class="md:w-auto bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-6 rounded-2xl shadow-sm transition-colors flex items-center justify-center gap-2 text-sm tracking-wide">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+                            Cetak Checklist
+                        </button>
                     </div>
 
                     <div id="listContainer" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 overflow-x-auto relative min-h-[300px]">
                         <div id="tableLoading" class="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
                             <p class="text-emerald-600 font-extrabold animate-pulse">Memuat data...</p>
                         </div>
-                        <table class="w-full text-left min-w-[600px]">
+                        <table class="w-full text-left min-w-[700px]">
                             <thead>
                                 <tr class="text-gray-400 border-b font-bold uppercase text-xs tracking-wider">
                                     <th class="pb-3 px-2">Nama Lengkap</th>
@@ -314,7 +319,7 @@
                 </div>
             </div>
 
-            <!-- 3. HAL স্ক্র EXPORT DATA -->
+            <!-- 3. HALAMAN EXPORT DATA -->
             <div id="pageExport" class="w-full max-w-xl hidden relative z-10 mt-4">
                 <div class="flex items-center gap-4 mb-6 justify-center">
                     <button onclick="showPage('dashboard')" class="bg-white p-2 rounded-full shadow-sm text-blue-700 hover:bg-blue-50 absolute left-4 md:left-0 top-0 border border-blue-100">
@@ -1073,7 +1078,7 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
                 const meatLabel = isSapi ? 'Daging Sapi' : 'Daging Kambing';
                 const joinedCodes = codes.join(', ');
                 
-                const message = `Assalamu'alaikum Bapak/Ibu *${pendaftarName}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan daging qurban dengan *Nomor Kupon: ${joinedCodes}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia dengan menunjukkan e-kupon berikut. Terima kasih. Wassalamu'alaikum.`;
+                const message = `Assalamu'alaikum Bapak/Ibu *${pendaftarName}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${joinedCodes}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
 
                 if (navigator.canShare && navigator.canShare({ files: filesArray })) {
                     await navigator.share({ title: 'Kupon Qurban', text: message, files: filesArray });
@@ -1159,6 +1164,128 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
             renderTable(filteredData);
         }
 
+        // ==========================================
+        // FUNGSI MENGHAPUS DATA (KOREKSI)
+        // ==========================================
+        async function deleteData(dataStr) {
+            try {
+                const data = JSON.parse(dataStr.replace(/&#39;/g, "'"));
+                const confirmMsg = `⚠️ PERINGATAN!\n\nApakah Anda yakin ingin menghapus data warga:\n\nNama: ${data.name}\nAntrean: ${data.ticket_number}\nDaging: ${data.meat_choice.toUpperCase()}\n\nTindakan ini akan menghapus data dari sistem secara permanen.`;
+                
+                if (confirm(confirmMsg)) {
+                    // Tampilkan loading di tabel
+                    const tableLoading = document.getElementById('tableLoading');
+                    if(tableLoading) tableLoading.classList.remove('hidden');
+
+                    let query = supabaseClient.from('registrations').delete();
+                    
+                    // Prioritaskan ID jika ada (Best Practice)
+                    if (data.id) {
+                        query = query.eq('id', data.id);
+                    } else {
+                        // Fallback menggunakan nomor tiket & pilihan daging (karena kita load select('*') ID biasanya ada)
+                        query = query.eq('ticket_number', data.ticket_number).eq('meat_choice', data.meat_choice);
+                    }
+
+                    const { error } = await query;
+                    if (error) throw error;
+                    
+                    alert("Data berhasil dihapus.");
+                    loadData(); // Muat ulang tabel
+                }
+            } catch (err) {
+                console.error("Gagal menghapus data:", err);
+                alert("Terjadi kesalahan saat menghapus data: " + err.message);
+            }
+        }
+
+        // ==========================================
+        // FUNGSI CETAK KERTAS CHECKLIST FISIK
+        // ==========================================
+        function printChecklist() {
+            const filterType = document.getElementById('typeFilter')?.value || 'all';
+            const filteredData = allRegistrations.filter(r => filterType === 'all' || r.meat_choice === filterType);
+            
+            if(filteredData.length === 0) {
+                alert("Tidak ada data untuk dicetak pada kategori ini.");
+                return;
+            }
+
+            // Urutkan data: Kelompokkan Sapi dulu lalu Kambing, kemudian urutkan berdasarkan Nomor Tiket
+            const sortedData = [...filteredData].sort((a, b) => {
+                if (a.meat_choice !== b.meat_choice) {
+                    return a.meat_choice === 'sapi' ? -1 : 1;
+                }
+                return parseInt(a.ticket_number) - parseInt(b.ticket_number);
+            });
+
+            let printContent = `
+                <html>
+                <head>
+                    <title>Checklist Pengambilan Qurban</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; font-size: 12px; }
+                        h2 { text-align: center; margin-bottom: 5px; }
+                        h4 { text-align: center; margin-top: 0; font-weight: normal; margin-bottom: 20px; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; font-weight: bold; text-align: center; }
+                        .text-center { text-align: center; }
+                        .ceklis-box { width: 60px; height: 30px; }
+                        @media print {
+                            @page { margin: 1.5cm; }
+                            thead { display: table-header-group; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2>CHECKLIST PENGAMBILAN DAGING QURBAN</h2>
+                    <h4>Musholla Miftahul Ulum RT 006 / RW 06 Cipadu - Idul Adha 1447 H</h4>
+                    <p><strong>Kategori:</strong> ${filterType === 'all' ? 'Sapi & Kambing' : (filterType === 'sapi' ? 'Khusus Sapi' : 'Khusus Kambing')}</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="15%">No. Antrean</th>
+                                <th width="35%">Nama Lengkap</th>
+                                <th width="15%">Daging</th>
+                                <th width="30%">Tanda Tangan / Ceklis</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            sortedData.forEach((r, i) => {
+                const meatLabel = r.meat_choice === 'sapi' ? 'Sapi' : 'Kambing';
+                printContent += `
+                    <tr>
+                        <td class="text-center">${i + 1}</td>
+                        <td class="text-center font-bold" style="font-size: 14px;">${r.ticket_number}</td>
+                        <td style="font-weight: bold;">${r.name}</td>
+                        <td class="text-center">${meatLabel}</td>
+                        <td class="ceklis-box"></td>
+                    </tr>
+                `;
+            });
+
+            printContent += `
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
+
+            // Buka window baru untuk mencetak dokumen
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            
+            // Beri jeda sedikit agar resource di window baru termuat sebelum memanggil print
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+        }
+
         function renderTable(dataToRender) {
             const tbody = document.getElementById('tableBody');
             if(!tbody) return;
@@ -1182,6 +1309,10 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
                             <button onclick='sendWhatsAppMessage(\`${JSON.stringify(r).replace(/'/g, "&#39;")}\`)' class="text-xs bg-green-500 hover:bg-green-600 text-white py-1.5 px-3 rounded-md transition-colors font-bold shadow-sm whitespace-nowrap flex items-center gap-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                                 WA
+                            </button>
+                            <button onclick='deleteData(\`${JSON.stringify(r).replace(/'/g, "&#39;")}\`)' class="text-xs bg-red-500 hover:bg-red-600 text-white py-1.5 px-3 rounded-md transition-colors font-bold shadow-sm whitespace-nowrap flex items-center gap-1" title="Hapus Data">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                                Hapus
                             </button>
                         </div>
                     </td>
@@ -1211,7 +1342,7 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
                 const meatLabel = data.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
                 
                 // Template Pesan WA Default
-                const message = `Assalamu'alaikum Bapak/Ibu *${data.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan daging qurban dengan *Nomor Kupon: ${data.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
+                const message = `Assalamu'alaikum Bapak/Ibu *${data.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${data.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
                 
                 // Buka tab WA
                 const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
@@ -1332,6 +1463,7 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
             
             const isSapi = data.meat_choice === 'sapi';
             document.getElementById('modalTicketIconRender').textContent = isSapi ? '🐄' : '🐐';
+            document.getElementById('modalTicketBgIcon').textContent = isSapi ? '🐄' : '🐐';
             document.getElementById('modalTicketMeatRender').textContent = isSapi ? 'DAGING SAPI' : 'DAGING KAMBING';
 
             document.getElementById('ticketModal').classList.remove('hidden');
@@ -1381,7 +1513,7 @@ Mohon perhatiannya, silakan datang ke Musholla Miftahul Ulum sekarang untuk meng
                 const file = new File([blob], `Tiket_${activeTicketData.name}_${activeTicketData.ticket_number}.png`, { type: 'image/png' });
 
                 const meatLabel = activeTicketData.meat_choice === 'sapi' ? 'Daging Sapi' : 'Daging Kambing';
-                const message = `Assalamu'alaikum Bapak/Ibu *${activeTicketData.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan daging qurban dengan *Nomor Kupon: ${activeTicketData.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
+                const message = `Assalamu'alaikum Bapak/Ibu *${activeTicketData.name}*,\n\nIni adalah pesan resmi dari *Panitia Qurban Musholla Miftahul Ulum RT 006 / RW 06 Cipadu*.\n\nAlhamdulillah, data Anda telah terdaftar untuk penerimaan *${meatLabel}* dengan *Nomor Antrean: ${activeTicketData.ticket_number}*.\n\nMohon hadir sesuai waktu yang telah ditentukan oleh panitia. Terima kasih. Wassalamu'alaikum.`;
 
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     await navigator.share({
